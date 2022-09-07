@@ -14,6 +14,7 @@ services:
       - ".:/application"
     environment:
       XDEBUG_CONFIG: "remote_host=host.docker.internal"
+      PHP_IDE_CONFIG: "serverName=company-directory"
       LOG_LEVEL: 'debug'
       APP_ENV: 'dev'
       DATABASE_URL: "postgresql://postgres:testingpass@postgres:5432/app?serverVersion=13&charset=utf8"
