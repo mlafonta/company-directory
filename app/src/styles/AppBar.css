@@ -1,0 +1,45 @@
+.appBar {
+    height: 100px;
+    background-color: #195CAB;
+    color: #FFFFFF;
+}
+
+.icons {
+    margin-top: 20px;
+    color: #FFFFFF;
+    font-size: xxx-large;
+    font-weight: bolder;
+    margin-bottom: 2px;
+}
+
+.icons-no-margin {
+    color: #FFFFFF;
+    font-size: xxx-large;
+    margin-bottom: 2px;
+}
+
+.link {
+    font-size: x-large;
+    font-weight: bolder;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+.logo {
+    height: 100px;
+    width: 150px;
+}
+
+.menu {
+    margin-top: 25px;
+}
+
+.search-bar {
+    width: 100%;
+}
+
+.text {
+    font-size: x-large;
+    margin-left: 5px;
+}
