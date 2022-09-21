@@ -15,35 +15,35 @@ class ParentChild
 
     #[ORM\ManyToOne(inversedBy: 'parentChildren')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $parent = null;
+    private ?GroupData $parent = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $child = null;
+    private ?GroupData $child = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getParent(): ?User
+    public function getParent(): ?GroupData
     {
         return $this->parent;
     }
 
-    public function setParent(?User $parent): self
+    public function setParent(?GroupData $parent): self
     {
         $this->parent = $parent;
 
         return $this;
     }
 
-    public function getChild(): ?User
+    public function getChild(): ?GroupData
     {
         return $this->child;
     }
 
-    public function setChild(?User $child): self
+    public function setChild(?GroupData $child): self
     {
         $this->child = $child;
 

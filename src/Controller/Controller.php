@@ -9,6 +9,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class Controller extends AbstractController
 {
+    public $name;
+
     #[Route('/', name: 'app_')]
     public function index(): Response
     {
@@ -32,4 +34,6 @@ class Controller extends AbstractController
             'name' => $name
         ]);
     }
+
+
 }

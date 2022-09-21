@@ -16,11 +16,12 @@ class Position
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $description = null;
-
     #[ORM\Column]
     private ?bool $is_lead = null;
+
+    #[ORM\ManyToOne(inversedBy: 'positions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?GroupData $group = null;
 
     public function getId(): ?int
     {
@@ -39,17 +40,6 @@ class Position
         return $this;
     }
 
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(string $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
 
     public function isIsLead(): ?bool
     {
@@ -59,6 +49,18 @@ class Position
     public function setIsLead(bool $is_lead): self
     {
         $this->is_lead = $is_lead;
+
+        return $this;
+    }
+
+    public function getGroup(): ?GroupData
+    {
+        return $this->group;
+    }
+
+    public function setGroup(?GroupData $group): self
+    {
+        $this->group = $group;
 
         return $this;
     }

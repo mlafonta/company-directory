@@ -7,10 +7,11 @@ import Button from "@mui/material/Button";
 
 type MenuButtonProps = {
     menuName: string
-    menuItems: Array<string>
+    menuItems: { [key:string]: any } []
+    menuSource: string
 }
 
-const  MenuButton = ({menuName, menuItems}: MenuButtonProps) => {
+const  MenuButton = ({menuName, menuItems, menuSource}: MenuButtonProps) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -55,7 +56,7 @@ const  MenuButton = ({menuName, menuItems}: MenuButtonProps) => {
                                 aria-labelledby="composition-button"
                             >
                                 {menuItems.map((item) => (
-                                    <MenuItem className="text" onClick={handleClose}>{item}</MenuItem>
+                                    <MenuItem className="text" key={item.id} component="a" href={`/${menuSource}/${item.id}`}>{item.name}</MenuItem>
                                 ))}
                             </MenuList>
                         </ClickAwayListener>

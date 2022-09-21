@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
-class Group
+class GroupData
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,9 +21,6 @@ class Group
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
-    #[ORM\ManyToOne(inversedBy: 'groups')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?GroupType $group_type = null;
 
     #[ORM\OneToMany(mappedBy: 'group', targetEntity: GroupResource::class)]
     private Collection $groupResources;
@@ -31,10 +28,20 @@ class Group
     #[ORM\OneToMany(mappedBy: 'group', targetEntity: GroupSlack::class)]
     private Collection $groupSlacks;
 
+
+    #[ORM\OneToMany(mappedBy: 'group', targetEntity: Position::class)]
+    private Collection $positions;
+
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: ParentChild::class)]
+    private Collection $parentChildren;
+
+
     public function __construct()
     {
         $this->groupResources = new ArrayCollection();
         $this->groupSlacks = new ArrayCollection();
+        $this->positions = new ArrayCollection();
+        $this->parentChildren = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -62,18 +69,6 @@ class Group
     public function setDescription(string $description): self
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getGroupType(): ?GroupType
-    {
-        return $this->group_type;
-    }
-
-    public function setGroupType(?GroupType $group_type): self
-    {
-        $this->group_type = $group_type;
 
         return $this;
     }
@@ -132,6 +127,66 @@ class Group
             // set the owning side to null (unless already changed)
             if ($groupSlack->getGroup() === $this) {
                 $groupSlack->setGroup(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Position>
+     */
+    public function getPositions(): Collection
+    {
+        return $this->positions;
+    }
+
+    public function addPosition(Position $position): self
+    {
+        if (!$this->positions->contains($position)) {
+            $this->positions->add($position);
+            $position->setGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removePosition(Position $position): self
+    {
+        if ($this->positions->removeElement($position)) {
+            // set the owning side to null (unless already changed)
+            if ($position->getGroup() === $this) {
+                $position->setGroup(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ParentChild>
+     */
+    public function getParentChildren(): Collection
+    {
+        return $this->parentChildren;
+    }
+
+    public function addParentChild(ParentChild $parentChild): self
+    {
+        if (!$this->parentChildren->contains($parentChild)) {
+            $this->parentChildren->add($parentChild);
+            $parentChild->setParent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParentChild(ParentChild $parentChild): self
+    {
+        if ($this->parentChildren->removeElement($parentChild)) {
+            // set the owning side to null (unless already changed)
+            if ($parentChild->getParent() === $this) {
+                $parentChild->setParent(null);
             }
         }
 

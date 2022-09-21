@@ -15,7 +15,7 @@ class GroupSlack
 
     #[ORM\ManyToOne(inversedBy: 'groupSlacks')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?group $group = null;
+    private ?GroupData $group = null;
 
     #[ORM\ManyToOne(inversedBy: 'groupSlacks')]
     #[ORM\JoinColumn(nullable: false)]
@@ -26,12 +26,12 @@ class GroupSlack
         return $this->id;
     }
 
-    public function getGroup(): ?group
+    public function getGroup(): ?GroupData
     {
         return $this->group;
     }
 
-    public function setGroup(?group $group): self
+    public function setGroup(?GroupData $group): self
     {
         $this->group = $group;
 

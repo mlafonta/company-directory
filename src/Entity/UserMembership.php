@@ -21,6 +21,9 @@ class UserMembership
     #[ORM\JoinColumn(nullable: false)]
     private ?membership $membership = null;
 
+    #[ORM\Column]
+    private ?bool $is_lead = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -46,6 +49,18 @@ class UserMembership
     public function setMembership(?membership $membership): self
     {
         $this->membership = $membership;
+
+        return $this;
+    }
+
+    public function isIsLead(): ?bool
+    {
+        return $this->is_lead;
+    }
+
+    public function setIsLead(bool $is_lead): self
+    {
+        $this->is_lead = $is_lead;
 
         return $this;
     }

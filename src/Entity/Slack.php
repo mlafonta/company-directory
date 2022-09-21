@@ -34,9 +34,13 @@ class Slack
     #[ORM\Column]
     private ?bool $active = null;
 
+    #[ORM\OneToMany(mappedBy: 'slack', targetEntity: MembershipSlack::class)]
+    private Collection $membershipSlacks;
+
     public function __construct()
     {
         $this->groupSlacks = new ArrayCollection();
+        $this->membershipSlacks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -130,6 +134,36 @@ class Slack
     public function setActive(bool $active): self
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MembershipSlack>
+     */
+    public function getMembershipSlacks(): Collection
+    {
+        return $this->membershipSlacks;
+    }
+
+    public function addMembershipSlack(MembershipSlack $membershipSlack): self
+    {
+        if (!$this->membershipSlacks->contains($membershipSlack)) {
+            $this->membershipSlacks->add($membershipSlack);
+            $membershipSlack->setSlack($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMembershipSlack(MembershipSlack $membershipSlack): self
+    {
+        if ($this->membershipSlacks->removeElement($membershipSlack)) {
+            // set the owning side to null (unless already changed)
+            if ($membershipSlack->getSlack() === $this) {
+                $membershipSlack->setSlack(null);
+            }
+        }
 
         return $this;
     }

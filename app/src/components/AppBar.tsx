@@ -3,44 +3,35 @@ import '../styles/AppBar.css';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Link from '@mui/material/Link';
-import PersonIcon from '@mui/icons-material/Person';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import {
-    Autocomplete,
     ClickAwayListener,
-    Collapse,
     Grow, InputBase,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
     MenuList, Paper,
-    Popper, responsiveFontSizes, TextField
+    Popper,
 } from "@mui/material";
-import {ExpandLess, ExpandMore, Search} from "@mui/icons-material";
+import {Search} from "@mui/icons-material";
 import {NestedMenuItem} from "mui-nested-menu";
 import MenuButton from "./MenuButton";
 import MenuButtonWithIcon from "./MenuButtonWithIcon";
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
+import {useEffect} from "react";
+import axios from "axios";
+import {Group} from "../models/Group";
 
-const placeholderDepartments = ['Engineering', 'Customer Success', 'Finance'];
-const placeholderTeams = ['Squad K', 'Customer Support', 'Finance'];
-const placeholderResources = ['Employee Handbook', 'Jira', 'Confluence'];
+const placeholderDepartments = [{"name": "Engineering", "id":1}, {"name": "Finance", "id":2} ];
+const placeholderTeams = [{"name": "Squad K", "id":3}, {"name": "Onboarding", "id":4} ];
+const placeholderResources = [{"name": "Jira", "id":1, "url": "https://kipsudev.atlassian.net/jira/your-work"} ];
 const settings = ['My Profile', 'Logout'];
 
 const KipsuAppBar = () => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
-    const [myOptions, setMyOptions] = React.useState<Array<string>>([]);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
         setOpen(true);
@@ -92,6 +83,30 @@ const KipsuAppBar = () => {
         },
     }));
 
+    let teams: Array<Group> = [];
+    let departments: Array<Group> = [];
+    let resources = [];
+    async function fetchGroups() {
+        try {
+            const response = await axios.get('http://localhost:8000/api/v1/groups');
+            console.log(response.data)
+            response.data.forEach((item: string) => {
+                let groupObj = JSON.parse(item)
+                let group = groupObj as Group
+                if (group.type == 'team') {
+                    teams.push(groupObj);
+                } else if (group.type == 'department') {
+                    departments.push(groupObj);
+                }
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    useEffect(() => {
+        fetchGroups();
+    }, []);
+
     return (
         <AppBar position="static" className="appBar" elevation={0}>
             <Toolbar disableGutters>
@@ -136,24 +151,24 @@ const KipsuAppBar = () => {
                                                 label="Departments"
                                                 parentMenuOpen={open}
                                             >
-                                                    {placeholderDepartments.map((department) => (
-                                                        <MenuItem className="text" onClick={handleClose}>{department}</MenuItem>
+                                                    {departments.map((Group) => (
+                                                        <MenuItem className="text" key={Group.id} component="a" href={`/group/${Group.id}`}>{Group.name}</MenuItem>
                                                     ))}
                                             </NestedMenuItem>
                                             <NestedMenuItem
                                                 label="Teams"
                                                 parentMenuOpen={open}
                                             >
-                                                {placeholderTeams.map((team) => (
-                                                    <MenuItem className="text" onClick={handleClose}>{team}</MenuItem>
+                                                {teams.map((Group) => (
+                                                    <MenuItem className="text" key={Group.id} component="a" href={`/group/${Group.id}`}>{Group.name}</MenuItem>
                                                 ))}
                                             </NestedMenuItem>
                                             <NestedMenuItem
                                                 label="Resources"
                                                 parentMenuOpen={open}
                                             >
-                                                {placeholderResources.map((resource) => (
-                                                    <MenuItem className="text" onClick={handleClose}>{resource}</MenuItem>
+                                                {placeholderResources.map((item) => (
+                                                    <MenuItem className="text" component="a" href={`/resource/${item.id}`}>{item.name}</MenuItem>
                                                 ))}
                                             </NestedMenuItem>
                                         </MenuList>
@@ -171,9 +186,10 @@ const KipsuAppBar = () => {
                 </Box>
                 {/* Dropdown Menus */}
                 <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                    <MenuButton menuName="Departments" menuItems={placeholderDepartments} />
-                    <MenuButton menuName="Teams" menuItems={placeholderTeams} />
-                    <MenuButton menuName="Resources" menuItems={placeholderResources} />
+                    <MenuButton menuName="Departments" menuItems={departments} menuSource="group"/>
+                    <MenuButton menuName="Teams" menuItems={teams} menuSource="group" />
+                    <MenuButton menuName="Resources" menuItems={placeholderResources} menuSource="resource"/>
+                    <Button href="\org-chart" className="text" sx={{ color: "#FFFFFF" }}>Org Chart</Button>
                 </Box>
                 {/* Search Bar */}
                 <Box sx={{ display: { xs: 'none', s: 'none', md: 'flex' } }}>

@@ -2,26 +2,27 @@
 
 namespace App\Repository;
 
-use App\Entity\Group;
+use App\DTO\GroupDTO;
+use App\Entity\GroupData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Group>
+ * @extends ServiceEntityRepository<GroupData>
  *
- * @method Group|null find($id, $lockMode = null, $lockVersion = null)
- * @method Group|null findOneBy(array $criteria, array $orderBy = null)
- * @method Group[]    findAll()
- * @method Group[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method GroupData|null find($id, $lockMode = null, $lockVersion = null)
+ * @method GroupData|null findOneBy(array $criteria, array $orderBy = null)
+ * @method GroupData[]    findAll()
+ * @method GroupData[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class GroupRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Group::class);
+        parent::__construct($registry, GroupData::class);
     }
 
-    public function add(Group $entity, bool $flush = false): void
+    public function add(GroupData $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +31,7 @@ class GroupRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Group $entity, bool $flush = false): void
+    public function remove(GroupData $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +41,7 @@ class GroupRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return Group[] Returns an array of Group objects
+//     * @return GroupData[] Returns an array of GroupData objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +55,7 @@ class GroupRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Group
+//    public function findOneBySomeField($value): ?GroupData
 //    {
 //        return $this->createQueryBuilder('g')
 //            ->andWhere('g.exampleField = :val')
@@ -63,4 +64,19 @@ class GroupRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+    /**
+     * @return GroupDTO[]
+     */
+    public function getAllGroups(): array
+    {
+        $groupModels = $this->findAll();
+        $groupDTOs = [];
+        foreach ($groupModels as $model ) {
+            $groupDTO = new GroupDTO();
+            $groupDTO->setId($model->getId());
+            $groupDTO->setName($model->getName());
+            array_push($groupDTOs, $groupDTO);
+        }
+        return $groupDTOs;
+    }
 }

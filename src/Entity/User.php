@@ -56,9 +56,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Desk $desk = null;
 
-    #[ORM\OneToMany(mappedBy: 'parent_child', targetEntity: ParentChild::class)]
-    private Collection $parentChildren;
-
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserSocialQuestion::class)]
     private Collection $userSocialQuestions;
 
@@ -235,58 +232,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDeskId(?Desk $desk_id): self
     {
         $this->desk_id = $desk_id;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, ParentChild>
-     */
-    public function getParentChildren(): Collection
-    {
-        return $this->parentChildren;
-    }
-
-    public function addParent(ParentChild $parentChild): self
-    {
-        if (!$this->parentChildren->contains($parentChild)) {
-            $this->parentChildren->add($parentChild);
-            $parentChild->setParent($this);
-        }
-
-        return $this;
-    }
-
-    public function removeParent(ParentChild $parentChild): self
-    {
-        if ($this->parentChildren->removeElement($parentChild)) {
-            // set the owning side to null (unless already changed)
-            if ($parentChild->getParent() === $this) {
-                $parentChild->setParent(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function addChild(ParentChild $parentChild): self
-    {
-        if (!$this->parentChildren->contains($parentChild)) {
-            $this->parentChildren->add($parentChild);
-            $parentChild->setChild($this);
-        }
-
-        return $this;
-    }
-
-    public function removeChild(ParentChild $parentChild): self
-    {
-        if ($this->parentChildren->removeElement($parentChild)) {
-            // set the owning side to null (unless already changed)
-            if ($parentChild->getChild() === $this) {
-                $parentChild->setChild(null);
-            }
-        }
 
         return $this;
     }

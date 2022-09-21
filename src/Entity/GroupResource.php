@@ -16,7 +16,7 @@ class GroupResource
 
     #[ORM\ManyToOne(inversedBy: 'groupResources')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Group $group = null;
+    private ?GroupData $group = null;
 
     #[ORM\ManyToOne(inversedBy: 'groupResources')]
     #[ORM\JoinColumn(nullable: false)]
@@ -27,12 +27,12 @@ class GroupResource
         return $this->id;
     }
 
-    public function getGroup(): ?Group
+    public function getGroup(): ?GroupData
     {
         return $this->group;
     }
 
-    public function setGroup(?Group $group): self
+    public function setGroup(?GroupData $group): self
     {
         $this->group = $group;
 
