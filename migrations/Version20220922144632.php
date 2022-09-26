@@ -10,21 +10,24 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220916185806 extends AbstractMigration
+final class Version20220922144632 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Add base pronouns';
+        return 'group_resource test data';
     }
 
     public function up(Schema $schema): void
     {
         $this->addSql("
-            INSERT INTO pronoun
+            INSERT INTO group_resource
             VALUES 
-                (1, 'he/him'),
-                (2, 'she/her'),
-                (3, 'they/them');
+                   (1, 1, 1),
+                   (2, 7, 1),
+                   (3, 1, 2),
+                   (4, 1, 1),
+                   (5, 7, 4),
+                   (6, 1, 5);
         ");
 
     }
@@ -32,7 +35,7 @@ final class Version20220916185806 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql("
-            DELETE * FROM pronoun;
+            DELETE FROM group_resource WHERE id IN (1,2,3,4,5,6);
         ");
 
     }

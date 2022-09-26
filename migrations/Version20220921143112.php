@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220916164731 extends AbstractMigration
+final class Version20220921143112 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,7 +20,7 @@ final class Version20220916164731 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql("
-            INSERT INTO position
+            INSERT INTO position (\"id\", \"name\", \"is_lead\", \"group_data_id\" )
                 VALUES 
                    (1, 'President and CEO', true, 1),
                    (2, 'Office Manager', false, 1),

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\GroupDTO;
 use App\Entity\ParentChild;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,6 +17,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ParentChildRepository extends ServiceEntityRepository
 {
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ParentChild::class);
@@ -39,28 +41,44 @@ class ParentChildRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return ParentChild[] Returns an array of ParentChild objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findParentIdByChildId(int $id): int | null
+    {
+        $parentChild = $this->createQueryBuilder('p')
+            ->andWhere('(p.child) = :val')
+            ->setParameter('val', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
 
-//    public function findOneBySomeField($value): ?ParentChild
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if($parentChild){
+            return $parentChild->getParent()->getId();
+        } else {
+            return null;
+        }
+
+    }
+
+    public function findChildrenIdsByParentId(int $id): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('(p.child)')
+            ->andWhere('(p.parent) = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function addParentAndChildren(GroupDTO $group): void
+    {
+        $parent = $this->findParentIdByChildId($group->getId());
+        if ($parent) {
+            $group->setParent($parent);
+        }
+
+        $childArray = $this->findChildrenIdsByParentId($group->getId());
+        $simpleChildArray = array();
+        foreach ($childArray as $child){
+            $simpleChildArray[] = $child['1'];
+        }
+        $group->setChildren($simpleChildArray);
+    }
 }

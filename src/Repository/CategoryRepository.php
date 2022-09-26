@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\ResourceDTO;
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -63,4 +64,18 @@ class CategoryRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+    public function addCategory(ResourceDTO $resource): void
+    {
+        $resource->setCategory($this->findNameById(intval($resource->getCategory())));
+    }
+
+    private function findNameById(int $id): string
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.category')
+            ->andWhere('c.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

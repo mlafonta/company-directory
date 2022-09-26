@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Annotation\ApiResource;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: 'users')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -56,17 +57,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Desk $desk = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserSocialQuestion::class)]
-    private Collection $userSocialQuestions;
-
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserMembership::class)]
-    private Collection $userMemberships;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Position $position = null;
 
     public function __construct()
     {
-        $this->parentChildren = new ArrayCollection();
         $this->userSocialQuestions = new ArrayCollection();
-        $this->userMemberships = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -236,62 +233,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, UserSocialQuestion>
-     */
-    public function getUserSocialQuestions(): Collection
+    public function getPosition(): ?Position
     {
-        return $this->userSocialQuestions;
+        return $this->position;
     }
 
-    public function addUserSocialQuestion(UserSocialQuestion $userSocialQuestion): self
+    public function setPosition(?Position $position): self
     {
-        if (!$this->userSocialQuestions->contains($userSocialQuestion)) {
-            $this->userSocialQuestions->add($userSocialQuestion);
-            $userSocialQuestion->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUserSocialQuestion(UserSocialQuestion $userSocialQuestion): self
-    {
-        if ($this->userSocialQuestions->removeElement($userSocialQuestion)) {
-            // set the owning side to null (unless already changed)
-            if ($userSocialQuestion->getUser() === $this) {
-                $userSocialQuestion->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, UserMembership>
-     */
-    public function getUserMemberships(): Collection
-    {
-        return $this->userMemberships;
-    }
-
-    public function addUserMembership(UserMembership $userMembership): self
-    {
-        if (!$this->userMemberships->contains($userMembership)) {
-            $this->userMemberships->add($userMembership);
-            $userMembership->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUserMembership(UserMembership $userMembership): self
-    {
-        if ($this->userMemberships->removeElement($userMembership)) {
-            // set the owning side to null (unless already changed)
-            if ($userMembership->getUser() === $this) {
-                $userMembership->setUser(null);
-            }
-        }
+        $this->position = $position;
 
         return $this;
     }

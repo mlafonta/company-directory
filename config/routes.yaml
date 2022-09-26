@@ -2,7 +2,3 @@ controllers:
     resource: ../src/Controller/
     type: attribute
 
-group_list:
-    path: /api/v1/groups
-    controller: App\Controller\GroupController:listGroups
-    methods: [GET]

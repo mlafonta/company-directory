@@ -43,3 +43,29 @@
     font-size: x-large;
     margin-left: 5px;
 }
+
+.menu-text {
+    font-size: x-large;
+    margin-left: 5px;
+}
+
+.team-menu-text {
+    font-size: x-large;
+    margin-left: 20px;
+}
+
+.group-menu-header {
+    font-size: x-large;
+    margin-left: 5px;
+    font-weight: bolder;
+}
+
+.group-menu-header:hover {
+    text-decoration: underline;
+}
+
+.resource-menu-header {
+    font-size: x-large;
+    margin-left: 5px;
+    font-weight: bolder;
+}

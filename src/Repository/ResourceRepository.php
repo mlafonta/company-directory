@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\ResourceDTO;
 use App\Entity\Resource;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -40,7 +41,7 @@ class ResourceRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return Resource[] Returns an array of Resource objects
+//     * @return IResource[] Returns an array of IResource objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +55,7 @@ class ResourceRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Resource
+//    public function findOneBySomeField($value): ?IResource
 //    {
 //        return $this->createQueryBuilder('r')
 //            ->andWhere('r.exampleField = :val')
@@ -63,4 +64,31 @@ class ResourceRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    /**
+     * @return ResourceDTO[]
+     */
+    public function getAllResources(): array
+    {
+        $resourceModels = $this->findAll();
+        $resourceDTOs = [];
+        foreach ($resourceModels as $model) {
+            $resourceDTO = $this->convertToDTO($model);
+            array_push($resourceDTOs, $resourceDTO);
+        }
+        return $resourceDTOs;
+    }
+
+    private function convertToDTO(Resource $model): ResourceDTO
+    {
+        $resourceDTO = new ResourceDTO();
+        $resourceDTO->setId($model->getId());
+        $resourceDTO->setName($model->getName());
+        $resourceDTO->setCategory(strval($model->getCategory()->getId()));
+        $resourceDTO->setDescription($model->getDescription());
+        $resourceDTO->setUrl($model->getUrl());
+        $resourceDTO->setActive($model->isActive());
+
+        return $resourceDTO;
+    }
 }

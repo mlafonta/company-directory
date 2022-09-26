@@ -5,7 +5,6 @@ import * as React from "react";
 import OrgChart from "./pages/OrgChart";
 import AdminRequest from "./pages/AdminRequest";
 import Group from "./pages/Group";
-import Resource from "./pages/Resource";
 
 function App() {
   return (
@@ -15,7 +14,6 @@ function App() {
             <Route path="/org-chart" element={<OrgChart />} />
             <Route path="/admin-request" element={<AdminRequest />} />
             <Route path="/group/:id" element={<Group />} />
-            <Route path="/resource/:id" element={<Resource />} />
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

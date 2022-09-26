@@ -17,6 +17,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class GroupRepository extends ServiceEntityRepository
 {
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, GroupData::class);
@@ -55,15 +56,22 @@ class GroupRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?GroupData
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function getOneById($id): ?GroupDTO
+    {
+        $model = $this->createQueryBuilder('g')
+            ->andWhere('g.id = :val')
+            ->setParameter('val', $id)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+
+        if ($model) {
+            return $this->convertToDTO($model);
+        } else {
+            return null;
+        }
+    }
+
     /**
      * @return GroupDTO[]
      */
@@ -72,11 +80,24 @@ class GroupRepository extends ServiceEntityRepository
         $groupModels = $this->findAll();
         $groupDTOs = [];
         foreach ($groupModels as $model ) {
-            $groupDTO = new GroupDTO();
-            $groupDTO->setId($model->getId());
-            $groupDTO->setName($model->getName());
+            $groupDTO = $this->convertToDTO($model);
             array_push($groupDTOs, $groupDTO);
         }
         return $groupDTOs;
     }
+
+    private function convertToDTO(GroupData $model): GroupDTO {
+        $groupDTO = new GroupDTO();
+        $groupDTO->setId($model->getId());
+        $groupDTO->setName($model->getName());
+        $groupDTO->setDescription(($model->getDescription()));
+
+        return $groupDTO;
+    }
+
+    public function findIdbyPositionId(int $id)
+    {
+    }
+
+
 }

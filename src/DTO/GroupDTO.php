@@ -4,12 +4,13 @@ namespace App\DTO;
 
 class GroupDTO
 {
-    private int $id;
-    private string $name;
-    private string $description;
-    private string $type;
-    private ?int $parent;
-    private ?array $children;
+    private int $id = 0;
+    private string $name = '';
+    private string $description = '';
+    private string $type = '';
+    private ?int $lead = null;
+    private ?int $parent = null;
+    private ?array $children = null;
 
     /**
      * @return int
@@ -62,7 +63,7 @@ class GroupDTO
     /**
      * @return int
      */
-    public function getParent(): int
+    public function getParent(): int | null
     {
         return $this->parent;
     }
@@ -78,7 +79,7 @@ class GroupDTO
     /**
      * @return array
      */
-    public function getChildren(): array
+    public function getChildren(): array | null
     {
         return $this->children;
     }
@@ -107,4 +108,19 @@ class GroupDTO
         $this->description = $description;
     }
 
+    /**
+     * @return int
+     */
+    public function getLead(): int
+    {
+        return $this->lead;
+    }
+
+    /**
+     * @param int $lead
+     */
+    public function setLead(int $lead): void
+    {
+        $this->lead = $lead;
+    }
 }

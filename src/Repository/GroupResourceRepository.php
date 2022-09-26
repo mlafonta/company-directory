@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\ResourceDTO;
 use App\Entity\GroupResource;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -63,4 +64,24 @@ class GroupResourceRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+    public function addGroups(ResourceDTO $resource): void
+    {
+        $groupArray = $this->findGroupIdsByResourceId($resource->getId());
+        $simpleGroupArray= array();
+        foreach ($groupArray as $group) {
+            $simpleGroupArray[] = $group['1'];
+        }
+        $resource->setGroups($simpleGroupArray);
+    }
+
+    private function findGroupIdsByResourceId(int $id): array
+    {
+        return $this->createQueryBuilder('g')
+            ->select('(g.group_data)')
+            ->andWhere('(g.resource) = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getScalarResult()
+        ;
+    }
 }

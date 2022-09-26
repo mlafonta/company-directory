@@ -4,14 +4,15 @@ import * as React from "react";
 import '../styles/AppBar.css';
 import {ExpandLess, ExpandMore} from "@mui/icons-material";
 import Button from "@mui/material/Button";
+import {IGroup} from "../models/IGroup";
 
-type MenuButtonProps = {
+type TeamsMenuButton = {
     menuName: string
-    menuItems: { [key:string]: any } []
-    menuSource: string
+    menuItems: IGroup[]
+    headers: IGroup[]
 }
 
-const  MenuButton = ({menuName, menuItems, menuSource}: MenuButtonProps) => {
+const  TeamsMenuButton = ({menuName, menuItems, headers}: TeamsMenuButton) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -21,7 +22,7 @@ const  MenuButton = ({menuName, menuItems, menuSource}: MenuButtonProps) => {
     const handleClose = () => {
         setOpen(false);
     };
-
+    
     return(
         <>
         <Button
@@ -47,15 +48,22 @@ const  MenuButton = ({menuName, menuItems, menuSource}: MenuButtonProps) => {
                             placement === 'bottom-start' ? 'left top' : 'left bottom',
                     }}
                 >
-                    <Paper className="menu" style={{maxHeight: 415, overflow: 'auto'}} elevation={3}>
+                    <Paper className="menu" style={{maxHeight: 375, overflow: 'auto'}} elevation={3}>
                         <ClickAwayListener onClickAway={handleClose}>
                             <MenuList
                                 autoFocusItem={open}
                                 id="composition-menu"
                                 aria-labelledby="composition-button"
                             >
-                                {menuItems.map((item) => (
-                                    <MenuItem className="menu-text" key={item.id} component="a" href={`/${menuSource}/${item.id}`}>{item.name}</MenuItem>
+                                {headers.map((header) => (
+                                    <>
+                                        <MenuItem className="group-menu-header" key={header.id} component="a" href={`/group/${header.id}`}>{header.name}</MenuItem>
+                                        <li>
+                                            {menuItems.filter(item => item.parent == header.id).map(filteredItem => (
+                                                <MenuItem className="team-menu-text" key={filteredItem.id} component="a" href={`/group/${filteredItem.id}`}>{filteredItem.name}</MenuItem>
+                                            ))}
+                                        </li>
+                                    </>
                                 ))}
                             </MenuList>
                         </ClickAwayListener>
@@ -67,4 +75,4 @@ const  MenuButton = ({menuName, menuItems, menuSource}: MenuButtonProps) => {
     );
 };
 
-export default MenuButton;
+export default TeamsMenuButton;

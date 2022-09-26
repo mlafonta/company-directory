@@ -18,12 +18,8 @@ class SocialQuestion
     #[ORM\Column(length: 255)]
     private ?string $question = null;
 
-    #[ORM\OneToMany(mappedBy: 'social_question', targetEntity: UserSocialQuestion::class)]
-    private Collection $userSocialQuestions;
-
     public function __construct()
     {
-        $this->userSocialQuestions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -43,33 +39,4 @@ class SocialQuestion
         return $this;
     }
 
-    /**
-     * @return Collection<int, UserSocialQuestion>
-     */
-    public function getUserSocialQuestions(): Collection
-    {
-        return $this->userSocialQuestions;
-    }
-
-    public function addUserSocialQuestion(UserSocialQuestion $userSocialQuestion): self
-    {
-        if (!$this->userSocialQuestions->contains($userSocialQuestion)) {
-            $this->userSocialQuestions->add($userSocialQuestion);
-            $userSocialQuestion->setSocialQuestion($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUserSocialQuestion(UserSocialQuestion $userSocialQuestion): self
-    {
-        if ($this->userSocialQuestions->removeElement($userSocialQuestion)) {
-            // set the owning side to null (unless already changed)
-            if ($userSocialQuestion->getSocialQuestion() === $this) {
-                $userSocialQuestion->setSocialQuestion(null);
-            }
-        }
-
-        return $this;
-    }
 }

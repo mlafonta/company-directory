@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220920214156 extends AbstractMigration
+final class Version20220923195257 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,15 +20,17 @@ final class Version20220920214156 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP SEQUENCE group_data_id_seq CASCADE');
-        $this->addSql('DROP TABLE group_data');
+        $this->addSql('ALTER TABLE "user" ADD position_id INT NOT NULL');
+        $this->addSql('ALTER TABLE "user" ADD CONSTRAINT FK_8D93D649DD842E46 FOREIGN KEY (position_id) REFERENCES position (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('CREATE INDEX IDX_8D93D649DD842E46 ON "user" (position_id)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
-        $this->addSql('CREATE SEQUENCE group_data_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE group_data (id INT NOT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('ALTER TABLE "user" DROP CONSTRAINT FK_8D93D649DD842E46');
+        $this->addSql('DROP INDEX IDX_8D93D649DD842E46');
+        $this->addSql('ALTER TABLE "user" DROP position_id');
     }
 }

@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Repository\GroupResourceRepository;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Resource;
 
 #[ORM\Entity(repositoryClass: GroupResourceRepository::class)]
 class GroupResource
@@ -16,7 +15,7 @@ class GroupResource
 
     #[ORM\ManyToOne(inversedBy: 'groupResources')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?GroupData $group = null;
+    private ?GroupData $group_data = null;
 
     #[ORM\ManyToOne(inversedBy: 'groupResources')]
     #[ORM\JoinColumn(nullable: false)]
@@ -27,14 +26,14 @@ class GroupResource
         return $this->id;
     }
 
-    public function getGroup(): ?GroupData
+    public function getGroupData(): ?GroupData
     {
-        return $this->group;
+        return $this->group_data;
     }
 
-    public function setGroup(?GroupData $group): self
+    public function setGroupData(?GroupData $group_data): self
     {
-        $this->group = $group;
+        $this->group_data = $group_data;
 
         return $this;
     }

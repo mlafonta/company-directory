@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220916143815 extends AbstractMigration
+final class Version20220921142458 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,7 +20,7 @@ final class Version20220916143815 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql("
-            INSERT INTO \"group\"
+            INSERT INTO group_data
                 VALUES
                     (1, 'Kipsu', 'We create genuine human moments in an increasingly self-service world through digital messaging.'),
                     (2,'Human Resources', 'We keep our organization running smoothly and safely while scouting for talented individuals to join our mission.'),
@@ -52,7 +52,7 @@ final class Version20220916143815 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql("
-            DELETE * FROM \"group\";
+            DELETE * FROM group_data;
         ");
 
     }

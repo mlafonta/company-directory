@@ -22,11 +22,11 @@ import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import {useEffect} from "react";
 import axios from "axios";
-import {Group} from "../models/Group";
+import {IGroup} from "../models/IGroup";
+import TeamsMenuButton from "./TeamsMenuButton";
+import {IResource} from "../models/IResource";
+import ResourcesMenuButton from "./ResourcesMenuButton";
 
-const placeholderDepartments = [{"name": "Engineering", "id":1}, {"name": "Finance", "id":2} ];
-const placeholderTeams = [{"name": "Squad K", "id":3}, {"name": "Onboarding", "id":4} ];
-const placeholderResources = [{"name": "Jira", "id":1, "url": "https://kipsudev.atlassian.net/jira/your-work"} ];
 const settings = ['My Profile', 'Logout'];
 
 const KipsuAppBar = () => {
@@ -82,29 +82,47 @@ const KipsuAppBar = () => {
             },
         },
     }));
-
-    let teams: Array<Group> = [];
-    let departments: Array<Group> = [];
-    let resources = [];
+    let teams: IGroup[] = [];
+    let departments: IGroup[] = [];
+    let categories: string[] = [];
+    let resources: IResource[] = [];
     async function fetchGroups() {
         try {
             const response = await axios.get('http://localhost:8000/api/v1/groups');
-            console.log(response.data)
-            response.data.forEach((item: string) => {
-                let groupObj = JSON.parse(item)
-                let group = groupObj as Group
-                if (group.type == 'team') {
-                    teams.push(groupObj);
-                } else if (group.type == 'department') {
-                    departments.push(groupObj);
+            response.data.forEach((item: IGroup) => {
+                if (item.type == 'team') {
+                    teams.push(item);
+                } else if (item.type == 'department') {
+                    departments.push(item);
                 }
             });
         } catch (error) {
             console.error(error);
         }
     }
+    async function fetchResources() {
+        try {
+            const response = await axios.get('http://localhost:8000/api/v1/resources');
+            response.data.forEach((item: IResource) => {
+                console.log((item))
+                if (item.active && item.groups.includes(1)) {//unhardcode this eventually
+                    resources.push(item)
+                    if (!categories.includes(item.category)) {
+                        categories.push(item.category)
+                    }
+                }
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     useEffect(() => {
         fetchGroups();
+    }, []);
+
+    useEffect(() => {
+        fetchResources();
     }, []);
 
     return (
@@ -112,72 +130,72 @@ const KipsuAppBar = () => {
             <Toolbar disableGutters>
                 <Link href="/">
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, mr: 1}}>
-                        <img src='/images/Kipsu-Logo.png' className="logo" />
+                        <img src='/images/Kipsu-Logo.png' alt="Kipsu Logo" className="logo" />
                     </Box>
                 </Link>
-                {/* Hamburger Menu */}
-                <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                    <Button
-                        id="composition-button"
-                        aria-controls={open ? 'composition-menu' : undefined}
-                        aria-expanded={open ? 'true' : undefined}
-                        aria-haspopup="true"
-                        onClick={handleClick}
-                    >
-                        <MenuIcon className="icons" />
-                    </Button>
-                    <Popper
-                        anchorEl={anchorEl}
-                        open={open}
-                        placement="bottom-start"
-                        transition
-                        disablePortal
-                    >
-                        {({ TransitionProps, placement }) => (
-                            <Grow
-                                {...TransitionProps}
-                                style={{
-                                    transformOrigin:
-                                        placement === 'bottom-start' ? 'left top' : 'left bottom',
-                                }}
-                            >
-                                <Paper className="menu">
-                                    <ClickAwayListener onClickAway={handleClose}>
-                                        <MenuList
-                                            id="composition-menu"
-                                            aria-labelledby="composition-button"
-                                        >
-                                            <NestedMenuItem
-                                                label="Departments"
-                                                parentMenuOpen={open}
-                                            >
-                                                    {departments.map((Group) => (
-                                                        <MenuItem className="text" key={Group.id} component="a" href={`/group/${Group.id}`}>{Group.name}</MenuItem>
-                                                    ))}
-                                            </NestedMenuItem>
-                                            <NestedMenuItem
-                                                label="Teams"
-                                                parentMenuOpen={open}
-                                            >
-                                                {teams.map((Group) => (
-                                                    <MenuItem className="text" key={Group.id} component="a" href={`/group/${Group.id}`}>{Group.name}</MenuItem>
-                                                ))}
-                                            </NestedMenuItem>
-                                            <NestedMenuItem
-                                                label="Resources"
-                                                parentMenuOpen={open}
-                                            >
-                                                {placeholderResources.map((item) => (
-                                                    <MenuItem className="text" component="a" href={`/resource/${item.id}`}>{item.name}</MenuItem>
-                                                ))}
-                                            </NestedMenuItem>
-                                        </MenuList>
-                                    </ClickAwayListener>
-                                </Paper>
-                            </Grow>
-                        )}
-                    </Popper>
-                </Box>
+                {/*/!* Hamburger Menu *!/*/}
+                {/*<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>*/}
+                {/*    <Button*/}
+                {/*        id="composition-button"*/}
+                {/*        aria-controls={open ? 'composition-menu' : undefined}*/}
+                {/*        aria-expanded={open ? 'true' : undefined}*/}
+                {/*        aria-haspopup="true"*/}
+                {/*        onClick={handleClick}*/}
+                {/*    >*/}
+                {/*        <MenuIcon className="icons" />*/}
+                {/*    </Button>*/}
+                {/*    <Popper*/}
+                {/*        anchorEl={anchorEl}*/}
+                {/*        open={open}*/}
+                {/*        placement="bottom-start"*/}
+                {/*        transition*/}
+                {/*        disablePortal*/}
+                {/*    >*/}
+                {/*        {({ TransitionProps, placement }) => (*/}
+                {/*            <Grow*/}
+                {/*                {...TransitionProps}*/}
+                {/*                style={{*/}
+                {/*                    transformOrigin:*/}
+                {/*                        placement === 'bottom-start' ? 'left top' : 'left bottom',*/}
+                {/*                }}*/}
+                {/*            >*/}
+                {/*                <Paper className="menu">*/}
+                {/*                    <ClickAwayListener onClickAway={handleClose}>*/}
+                {/*                        <MenuList*/}
+                {/*                            id="composition-menu"*/}
+                {/*                            aria-labelledby="composition-button"*/}
+                {/*                        >*/}
+                {/*                            <NestedMenuItem*/}
+                {/*                                label="Departments"*/}
+                {/*                                parentMenuOpen={open}*/}
+                {/*                            >*/}
+                {/*                                    {departments.map((IGroup) => (*/}
+                {/*                                        <MenuItem className="text" key={IGroup.id} component="a" href={`/group/${IGroup.id}`}>{IGroup.name}</MenuItem>*/}
+                {/*                                    ))}*/}
+                {/*                            </NestedMenuItem>*/}
+                {/*                            <NestedMenuItem*/}
+                {/*                                label="Teams"*/}
+                {/*                                parentMenuOpen={open}*/}
+                {/*                            >*/}
+                {/*                                {teams.map((IGroup) => (*/}
+                {/*                                    <MenuItem className="text" key={IGroup.id} component="a" href={`/group/${IGroup.id}`}>{IGroup.name}</MenuItem>*/}
+                {/*                                ))}*/}
+                {/*                            </NestedMenuItem>*/}
+                {/*                            <NestedMenuItem*/}
+                {/*                                label="Resources"*/}
+                {/*                                parentMenuOpen={open}*/}
+                {/*                            >*/}
+                {/*                                {placeholderResources.map((item) => (*/}
+                {/*                                    <MenuItem className="text" key={item.id} component="a" href={`/resource/${item.id}`}>{item.name}</MenuItem>*/}
+                {/*                                ))}*/}
+                {/*                            </NestedMenuItem>*/}
+                {/*                        </MenuList>*/}
+                {/*                    </ClickAwayListener>*/}
+                {/*                </Paper>*/}
+                {/*            </Grow>*/}
+                {/*        )}*/}
+                {/*    </Popper>*/}
+                {/*</Box>*/}
                 {/* Site Name for small screens */}
                 <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, mt: 2 }}>
                     <Link href="/" color="inherit" style={{ textDecoration: 'none' }}>
@@ -186,9 +204,8 @@ const KipsuAppBar = () => {
                 </Box>
                 {/* Dropdown Menus */}
                 <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                    <MenuButton menuName="Departments" menuItems={departments} menuSource="group"/>
-                    <MenuButton menuName="Teams" menuItems={teams} menuSource="group" />
-                    <MenuButton menuName="Resources" menuItems={placeholderResources} menuSource="resource"/>
+                    <TeamsMenuButton menuName="Teams" menuItems={teams} headers={departments} />
+                    <ResourcesMenuButton menuName="Resources" menuItems={resources} headers={categories}/>
                     <Button href="\org-chart" className="text" sx={{ color: "#FFFFFF" }}>Org Chart</Button>
                 </Box>
                 {/* Search Bar */}

@@ -49,7 +49,7 @@ const  MenuButtonWithIcon = ({ menuItems}: MenuButtonWithIconProps) => {
                                 aria-labelledby="composition-button"
                             >
                                 {menuItems.map((item) => (
-                                    <MenuItem className="text" onClick={handleClose}>{item}</MenuItem>
+                                    <MenuItem className="menu-text" onClick={handleClose}>{item}</MenuItem>
                                 ))}
                             </MenuList>
                         </ClickAwayListener>

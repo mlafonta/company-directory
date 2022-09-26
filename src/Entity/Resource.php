@@ -26,21 +26,19 @@ class Resource
 
     #[ORM\ManyToOne(inversedBy: 'resources')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?category $category = null;
+    private ?Category $category = null;
 
-    #[ORM\OneToMany(mappedBy: 'resource', targetEntity: GroupResource::class)]
-    private Collection $groupResources;
 
     #[ORM\Column]
     private ?bool $active = null;
 
-    #[ORM\OneToMany(mappedBy: 'resource', targetEntity: MembershipResource::class)]
-    private Collection $membershipResources;
+
+    #[ORM\OneToMany(mappedBy: 'resource', targetEntity: GroupResource::class)]
+    private Collection $groupResources;
 
     public function __construct()
     {
         $this->groupResources = new ArrayCollection();
-        $this->membershipResources = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -84,14 +82,27 @@ class Resource
         return $this;
     }
 
-    public function getCategory(): ?category
+    public function getCategory(): ?Category
     {
         return $this->category;
     }
 
-    public function setCategory(?category $category): self
+    public function setCategory(?Category $category): self
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+
+    public function isActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
 
         return $this;
     }
@@ -120,48 +131,6 @@ class Resource
             // set the owning side to null (unless already changed)
             if ($groupResource->getResource() === $this) {
                 $groupResource->setResource(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function isActive(): ?bool
-    {
-        return $this->active;
-    }
-
-    public function setActive(bool $active): self
-    {
-        $this->active = $active;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, MembershipResource>
-     */
-    public function getMembershipResources(): Collection
-    {
-        return $this->membershipResources;
-    }
-
-    public function addMembershipResource(MembershipResource $membershipResource): self
-    {
-        if (!$this->membershipResources->contains($membershipResource)) {
-            $this->membershipResources->add($membershipResource);
-            $membershipResource->setResource($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMembershipResource(MembershipResource $membershipResource): self
-    {
-        if ($this->membershipResources->removeElement($membershipResource)) {
-            // set the owning side to null (unless already changed)
-            if ($membershipResource->getResource() === $this) {
-                $membershipResource->setResource(null);
             }
         }
 
