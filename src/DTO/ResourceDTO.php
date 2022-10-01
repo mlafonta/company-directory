@@ -10,7 +10,6 @@ class ResourceDTO
     private string $description = '';
     private string $url = '';
     private bool $active = false;
-    private array $groups = [];
 
     /**
      * @return int
@@ -95,18 +94,6 @@ class ResourceDTO
     /**
      * @return array
      */
-    public function getGroups(): array
-    {
-        return $this->groups;
-    }
-
-    /**
-     * @param array $groups
-     */
-    public function setGroups(array $groups): void
-    {
-        $this->groups = $groups;
-    }
 
     /**
      * @return string

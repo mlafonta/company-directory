@@ -4,8 +4,6 @@ namespace App\Controller;
 use App\Service\GroupService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class GroupController extends AbstractController
@@ -18,10 +16,22 @@ class GroupController extends AbstractController
 
 
     #[Route('/api/v1/groups', methods: ['GET'])]
-    public function listGroups(Request $request): JsonResponse {
+    public function listGroups(): JsonResponse {
 
         $groups = $this->groupService->getAllGroups();
         return $this->json($groups);
+
+    }
+
+    #[Route('/api/v1/groups/{id}', methods: ['GET'])]
+    public function getGroupById(int $id): JsonResponse {
+
+        $group = $this->groupService->getGroupById($id);
+        if (!$group) {
+            throw $this->createNotFoundException('Group not found');
+        }
+
+        return $this->json($group);
 
     }
 }

@@ -64,15 +64,14 @@ class PositionRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-    public function findGroupLeadIdByGroupId(int $id): int
+    public function findPositionIdsByGroupId(int $id)
     {
-        $position = $this->createQueryBuilder('p')
+        return $this->createQueryBuilder('p')
+            ->select('p.id')
             ->andWhere('(p.group_data) = :id')
-            ->andWhere('p.is_lead = true')
             ->setParameter('id', $id)
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getResult();
 
-        return $position->getId();
     }
 }

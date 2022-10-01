@@ -8,9 +8,9 @@ class GroupDTO
     private string $name = '';
     private string $description = '';
     private string $type = '';
-    private ?int $lead = null;
-    private ?int $parent = null;
+    private ?GroupDTO $parent = null;
     private ?array $children = null;
+    private ?array $members = null;
 
     /**
      * @return int
@@ -47,54 +47,6 @@ class GroupDTO
     /**
      * @return string
      */
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param string $type
-     */
-    public function setType(string $type): void
-    {
-        $this->type = $type;
-    }
-
-    /**
-     * @return int
-     */
-    public function getParent(): int | null
-    {
-        return $this->parent;
-    }
-
-    /**
-     * @param int $parent
-     */
-    public function setParent(int $parent): void
-    {
-        $this->parent = $parent;
-    }
-
-    /**
-     * @return array
-     */
-    public function getChildren(): array | null
-    {
-        return $this->children;
-    }
-
-    /**
-     * @param array $children
-     */
-    public function setChildren(array $children): void
-    {
-        $this->children = $children;
-    }
-
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;
@@ -109,18 +61,68 @@ class GroupDTO
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getLead(): int
+    public function getType(): string
     {
-        return $this->lead;
+        return $this->type;
     }
 
     /**
-     * @param int $lead
+     * @param string $type
      */
-    public function setLead(int $lead): void
+    public function setType(string $type): void
     {
-        $this->lead = $lead;
+        $this->type = $type;
     }
+
+    /**
+     * @return GroupDTO|null
+     */
+    public function getParent(): ?GroupDTO
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param GroupDTO|null $parent
+     */
+    public function setParent(?GroupDTO $parent): void
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getChildren(): ?array
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param array|null $children
+     */
+    public function setChildren(?array $children): void
+    {
+        $this->children = $children;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getMembers(): ?array
+    {
+        return $this->members;
+    }
+
+    /**
+     * @param array|null $members
+     */
+    public function setMembers(?array $members): void
+    {
+        $this->members = $members;
+    }
+
+
 }

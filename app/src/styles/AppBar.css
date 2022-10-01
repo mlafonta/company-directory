@@ -34,6 +34,10 @@
 .menu {
     margin-top: 25px;
 }
+.hamburger-menu {
+    margin-top: 15px;
+    background-color: #195CAB;
+}
 
 .search-bar {
     width: 100%;

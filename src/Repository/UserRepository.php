@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\UserDTO;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -80,19 +81,33 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 //            ->getOneOrNullResult()
 //        ;
 //    }
-    public function findIdByPositionId(int $id): int | null
+    public function findByPositionId(int $id): array | null
     {
         $user = $this->createQueryBuilder('u')
             ->andWhere('(u.position) = :id')
             ->setParameter('id', $id)
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getResult();
 
-
-        if($user) {
-            return $user->getId();
+        if ($user){
+            $userArray = array();
+            foreach ($user as $userInstance){
+                array_push($userArray, $this->convertToDTO($userInstance));
+            }
+            return $userArray;
         } else {
             return null;
         }
+    }
+
+    private function convertToDTO(User $model) : UserDTO
+    {
+        $userDTO = new UserDTO();
+        $userDTO->setId($model->getId());
+        $userDTO->setName($model->getFirstName() . ' '. $model->getLastName());
+        $userDTO->setPosition($model->getPosition()->getName());
+        $userDTO->setIsLead($model->getPosition()->isIsLead());
+
+        return $userDTO;
     }
 }

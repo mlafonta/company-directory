@@ -10,4 +10,5 @@ export interface IUser {
     slack: string
     socialQuestions: string[]
     socialQuestionAnswers: string[]
+    lead: boolean
 }

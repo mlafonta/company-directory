@@ -65,18 +65,15 @@ class ResourceRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-    /**
-     * @return ResourceDTO[]
-     */
-    public function getAllResources(): array
+    public function findById(int $id): ?ResourceDTO
     {
-        $resourceModels = $this->findAll();
-        $resourceDTOs = [];
-        foreach ($resourceModels as $model) {
-            $resourceDTO = $this->convertToDTO($model);
-            array_push($resourceDTOs, $resourceDTO);
-        }
-        return $resourceDTOs;
+        $resourceModel = $this->createQueryBuilder('r')
+            ->andWhere('r.id = :val')
+            ->setParameter('val', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $this->convertToDTO($resourceModel);
     }
 
     private function convertToDTO(Resource $model): ResourceDTO
@@ -91,4 +88,5 @@ class ResourceRepository extends ServiceEntityRepository
 
         return $resourceDTO;
     }
+
 }

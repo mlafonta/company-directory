@@ -1,4 +1,4 @@
-import { Container, Typography} from "@mui/material";
+import {Container, Typography} from "@mui/material";
 import KipsuAppBar from "../components/AppBar";
 import * as React from "react";
 import '../styles/Home.css';
@@ -10,7 +10,7 @@ const Home = () => {
         <>
             <KipsuAppBar/>
             <Container disableGutters maxWidth="xl">
-                <Typography className="title" variant="h1" align="center" gutterBottom>
+                <Typography className="home-title" variant="h1" align="center" gutterBottom>
                     Welcome to the<br/>Kipsu Company Directory
                 </Typography>
                 <Typography variant="h4" align="center" gutterBottom>

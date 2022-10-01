@@ -4,7 +4,6 @@ namespace App\Service;
 
 use App\DTO\ResourceDTO;
 use App\Repository\CategoryRepository;
-
 use App\Repository\GroupResourceRepository;
 use App\Repository\ResourceRepository;
 
@@ -27,13 +26,17 @@ class ResourceService
     /**
      * @return ResourceDTO[]
      */
-    public function getAllResources(): array
+    public function getResourcesForGroup(int $id): array
     {
-        $resources = $this->resourceRepository->getAllResources();
-        foreach ($resources as $resource){
+        $resourceIds = $this->groupResourceRepository->findResourceIdsByGroupId($id);
+        $resourceDTOs[] = [];
+        foreach ($resourceIds as $resourceId) {
+            $resource = $this->resourceRepository->findById($resourceId);
             $this->categoryRepository->addCategory($resource);
-            $this->groupResourceRepository->addGroups($resource);
+            if (!in_array($resource, $resourceDTOs)) {
+                array_push($resourceDTOs, $resource);
+            }
         }
-        return $resources;
+        return $resourceDTOs;
     }
 }

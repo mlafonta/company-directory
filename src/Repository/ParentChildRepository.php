@@ -66,19 +66,4 @@ class ParentChildRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
-    public function addParentAndChildren(GroupDTO $group): void
-    {
-        $parent = $this->findParentIdByChildId($group->getId());
-        if ($parent) {
-            $group->setParent($parent);
-        }
-
-        $childArray = $this->findChildrenIdsByParentId($group->getId());
-        $simpleChildArray = array();
-        foreach ($childArray as $child){
-            $simpleChildArray[] = $child['1'];
-        }
-        $group->setChildren($simpleChildArray);
-    }
 }

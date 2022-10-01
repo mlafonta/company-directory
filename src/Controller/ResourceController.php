@@ -15,10 +15,10 @@ class ResourceController extends AbstractController
         $this->resourceService = $resourceService;
     }
 
-    #[Route('/api/v1/resources', methods: ['GET'])]
-    public function listResources(): Response
+    #[Route('/api/v1/groups/{id}/resources', methods: ['GET'])]
+    public function listResourcesByGroup(int $id): Response
     {
-        $resources = $this->resourceService->getAllResources();
+        $resources = $this->resourceService->getResourcesForGroup($id);
         return $this->json($resources);
     }
 }

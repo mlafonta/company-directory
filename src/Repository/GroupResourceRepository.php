@@ -64,24 +64,20 @@ class GroupResourceRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
-    public function addGroups(ResourceDTO $resource): void
-    {
-        $groupArray = $this->findGroupIdsByResourceId($resource->getId());
-        $simpleGroupArray= array();
-        foreach ($groupArray as $group) {
-            $simpleGroupArray[] = $group['1'];
-        }
-        $resource->setGroups($simpleGroupArray);
-    }
 
-    private function findGroupIdsByResourceId(int $id): array
+    public function findResourceIdsByGroupId(int $id): array
     {
-        return $this->createQueryBuilder('g')
-            ->select('(g.group_data)')
-            ->andWhere('(g.resource) = :id')
+        $resources = $this->createQueryBuilder('g')
+            ->select('(g.resource)')
+            ->andWhere('(g.group_data) = :id')
             ->setParameter('id', $id)
             ->getQuery()
             ->getScalarResult()
         ;
+        $simpleResourceArray= array();
+        foreach ($resources as $resource) {
+            $simpleResourceArray[] = $resource['1'];
+        }
+        return $simpleResourceArray;
     }
 }
