@@ -8,9 +8,7 @@ const User = () => {
 
     return(
         <>
-        <KipsuAppBar/>
         <h1>{id}</h1>
-        <Footer/>
         </>
     )
 }

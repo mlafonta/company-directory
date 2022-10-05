@@ -1,7 +1,5 @@
-import KipsuAppBar from "../components/AppBar";
 import * as React from "react";
 import {useEffect} from "react";
-import Footer from "../components/Footer";
 import {useParams} from "react-router";
 import {IGroup} from "../models/IGroup";
 import axios from "../apis/companyDirectoryServer";
@@ -33,11 +31,11 @@ const Group = () => {
     }
     let group: IGroup = response ? response as IGroup : emptyGroup
     return(
-        <>
+        <>  {error &&
+            <h1>Page does not exist</h1>}
             {loading && <LinearProgress/>}
             {!loading &&
                 <>
-                <KipsuAppBar/>
                     <Grid container spacing={2} mt={1}>
                         <Grid xs={8} item>
                             <Paper elevation={0} style={{textAlign: 'center', overflow: 'auto'}}>
@@ -66,11 +64,10 @@ const Group = () => {
                             </Paper>
                         </Grid>
                         <Divider orientation="vertical" flexItem sx={{borderRightWidth: 5}} />
-                        <Grid xs={3} item>
+                        <Grid xs={3} item style={{maxHeight: '80vh', overflowY: "scroll"}}>
                             <GroupResourceDisplay group={group?.id!} />
                         </Grid>
                     </Grid>
-                <Footer />
                 </>
             }
         </>

@@ -5,7 +5,6 @@ import * as React from "react";
 const AdminRequest = () => {
     return (
         <>
-            <KipsuAppBar/>
         </>
     );
 };

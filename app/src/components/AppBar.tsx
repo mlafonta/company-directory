@@ -73,82 +73,84 @@ const KipsuAppBar = () => {
     }));
     return (
         <>
-                <AppBar position="static" className="appBar" elevation={0}>
-                    <Toolbar disableGutters>
-                        <Link href="/">
-                            <Box sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}>
-                                <img src='/images/Kipsu-Logo.png' alt="Kipsu Logo" className="logo"/>
-                            </Box>
+            <AppBar position="static" className="appBar" elevation={0}>
+                <Toolbar disableGutters>
+                    <Link href="/">
+                        <Box sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}>
+                            <img src='/images/Kipsu-Logo.png' alt="Kipsu Logo" className="logo"/>
+                        </Box>
+                    </Link>
+                    {/*/!* Hamburger Menu *!/*/}
+                    {/*<Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>*/}
+                    {/*    <Button*/}
+                    {/*        id="composition-button"*/}
+                    {/*        disabled*/}
+                    {/*        aria-controls={open ? 'composition-menu' : undefined}*/}
+                    {/*        aria-expanded={open ? 'true' : undefined}*/}
+                    {/*        aria-haspopup="true"*/}
+                    {/*        onClick={handleClick}*/}
+                    {/*    >*/}
+                    {/*        <MenuIcon className="icons"/>*/}
+                    {/*    </Button>*/}
+                    {/*    <Popper*/}
+                    {/*        anchorEl={anchorEl}*/}
+                    {/*        open={open}*/}
+                    {/*        placement="bottom-start"*/}
+                    {/*        transition*/}
+                    {/*        disablePortal*/}
+                    {/*    >*/}
+                    {/*        {({TransitionProps, placement}) => (*/}
+                    {/*            <Grow*/}
+                    {/*                {...TransitionProps}*/}
+                    {/*                style={{*/}
+                    {/*                    transformOrigin:*/}
+                    {/*                        placement === 'bottom-start' ? 'left top' : 'left',*/}
+                    {/*                }}*/}
+                    {/*            >*/}
+                    {/*                <Paper className="hamburger-menu">*/}
+                    {/*                    <ClickAwayListener onClickAway={handleClose}>*/}
+                    {/*                        <MenuList*/}
+                    {/*                            id="composition-menu"*/}
+                    {/*                            aria-labelledby="composition-button"*/}
+                    {/*                        >*/}
+                    {/*                        </MenuList>*/}
+                    {/*                    </ClickAwayListener>*/}
+                    {/*                </Paper>*/}
+                    {/*            </Grow>*/}
+                    {/*        )}*/}
+                    {/*    </Popper>*/}
+                    {/*</Box>*/}
+                    {/* Site Name for small screens */}
+                    {/*<Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}, mt: 2}}>*/}
+                    <Box m="auto" sx={{display: {xs: 'flex', md: 'none'}, mt: 4}}>
+                        <Link href="/" color="inherit" style={{textDecoration: 'none'}}>
+                            <Typography className="link">Kipsu Company Directory</Typography>
                         </Link>
-                        {/* Hamburger Menu */}
-                        <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
-                            <Button
-                                id="composition-button"
-                                aria-controls={open ? 'composition-menu' : undefined}
-                                aria-expanded={open ? 'true' : undefined}
-                                aria-haspopup="true"
-                                onClick={handleClick}
-                            >
-                                <MenuIcon className="icons"/>
-                            </Button>
-                            <Popper
-                                anchorEl={anchorEl}
-                                open={open}
-                                placement="bottom-start"
-                                transition
-                                disablePortal
-                            >
-                                {({TransitionProps, placement}) => (
-                                    <Grow
-                                        {...TransitionProps}
-                                        style={{
-                                            transformOrigin:
-                                                placement === 'bottom-start' ? 'left top' : 'left',
-                                        }}
-                                    >
-                                        <Paper className="hamburger-menu">
-                                            <ClickAwayListener onClickAway={handleClose}>
-                                                <MenuList
-                                                    id="composition-menu"
-                                                    aria-labelledby="composition-button"
-                                                >
-                                                </MenuList>
-                                            </ClickAwayListener>
-                                        </Paper>
-                                    </Grow>
-                                )}
-                            </Popper>
-                        </Box>
-                        {/* Site Name for small screens */}
-                        <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}, mt: 2}}>
-                            <Link href="/" color="inherit" style={{textDecoration: 'none'}}>
-                                <Typography className="link">Kipsu Company Directory</Typography>
-                            </Link>
-                        </Box>
-                        {/* Dropdown Menus */}
-                        <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
-                            <TeamsMenuButton/>
-                            <ResourcesMenuButton groupId={1} />
-                            <Button href="\org-chart" className="text" sx={{color: "#FFFFFF"}}>Org Chart</Button>
-                        </Box>
-                        {/* Search Bar */}
-                        <Box sx={{display: {xs: 'none', s: 'none', md: 'flex'}}}>
-                            <Search>
-                                <SearchIconWrapper>
-                                    <SearchIcon/>
-                                </SearchIconWrapper>
-                                <StyledInputBase
-                                    placeholder="Search…"
-                                    inputProps={{'aria-label': 'search'}}
-                                />
-                            </Search>
-                        </Box>
-                        {/* Account Dropdown */}
-                        <Box sx={{flexGrow: 0, mx: 3}}>
-                            <MenuButtonWithIcon menuItems={settings}/>
-                        </Box>
-                    </Toolbar>
-                </AppBar>
-            </>);
+                    </Box>
+                    {/* Dropdown Menus */}
+                    <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
+                        <TeamsMenuButton/>
+                        <ResourcesMenuButton groupId={1}/>
+                        {/*<Button href="\org-chart" className="text" sx={{color: "#FFFFFF"}}>Org Chart</Button>*/}
+                    </Box>
+                    {/*/!* Search Bar *!/*/}
+                    {/*<Box sx={{display: {xs: 'none', s: 'none', md: 'flex'}}}>*/}
+                    {/*    <Search>*/}
+                    {/*        <SearchIconWrapper>*/}
+                    {/*            <SearchIcon/>*/}
+                    {/*        </SearchIconWrapper>*/}
+                    {/*        <StyledInputBase*/}
+                    {/*            placeholder="Search…"*/}
+                    {/*            inputProps={{'aria-label': 'search'}}*/}
+                    {/*        />*/}
+                    {/*    </Search>*/}
+                    {/*</Box>*/}
+                    {/*/!* Account Dropdown *!/*/}
+                    {/*<Box sx={{flexGrow: 0, mx: 3}}>*/}
+                    {/*    <MenuButtonWithIcon menuItems={settings}/>*/}
+                    {/*</Box>*/}
+                </Toolbar>
+            </AppBar>
+        </>);
 };
 export default KipsuAppBar;

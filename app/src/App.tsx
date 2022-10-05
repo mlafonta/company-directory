@@ -6,9 +6,13 @@ import OrgChart from "./pages/OrgChart";
 import AdminRequest from "./pages/AdminRequest";
 import Group from "./pages/Group";
 import User from "./pages/User";
+import AppBar from "./components/AppBar";
+import Footer from "./components/Footer";
 
 function App() {
   return (
+      <>
+      <AppBar />
       <BrowserRouter>
         <Routes>
             <Route path="/" element={<Home />} />
@@ -19,6 +23,8 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
+      <Footer />
+      </>
 
   )
 }

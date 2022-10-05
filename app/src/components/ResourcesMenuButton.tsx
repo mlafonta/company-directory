@@ -45,8 +45,8 @@ const  ResourcesMenuButton = ({groupId}: ResourcesMenuButtonProps) => {
         response.forEach((item: IResource) => {
             if (item.active) {
                 resources.push(item)
-                if (!categories.includes(item.category)) {
-                    categories.push(item.category)
+                if (!categories.includes(item.category!)) {
+                    categories.push(item.category!)
                 }
             }
         });
@@ -55,6 +55,14 @@ const  ResourcesMenuButton = ({groupId}: ResourcesMenuButtonProps) => {
     
     return(
         <>
+            {loading &&
+                <Button
+                    className="text"
+                    disabled
+                    sx={{my: 2, color: 'white', display: 'flex'}}
+                >
+                    Resources <ExpandMore/>
+                </Button>}
             {!loading && !error && response &&  <>
                 <Button
                     className="text"

@@ -78,4 +78,14 @@ class CategoryRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    public function getIdByCategory(string $category): int
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.id')
+            ->andWhere('c.category = :category')
+            ->setParameter('category', $category)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

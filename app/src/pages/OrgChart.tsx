@@ -6,8 +6,6 @@ import Footer from "../components/Footer";
 const OrgChart = () => {
     return (
         <>
-            <KipsuAppBar/>
-            <Footer/>
         </>
     );
 };

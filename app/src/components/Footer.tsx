@@ -19,7 +19,8 @@ const Footer = () => {
                     Need Extra Help?
                 </Typography>
                 &nbsp;
-                <Link href="/admin-request">
+                {/*<Link href="/admin-request">*/}
+                <Link href="mailto:mlafontant@kipsu.com?subject=Company%20Directory%20Request">
                     <Typography variant="h6">
                         Contact Admin
                     </Typography>

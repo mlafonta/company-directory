@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\DTO\ResourceDTO;
+use App\Entity\Category;
 use App\Entity\Resource;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -87,6 +88,52 @@ class ResourceRepository extends ServiceEntityRepository
         $resourceDTO->setActive($model->isActive());
 
         return $resourceDTO;
+    }
+
+    public function addResource(ResourceDTO $resourceDTO, int $categoryId): ResourceDTO
+    {
+        $resource = new Resource();
+        $resource->setCategory($this->getEntityManager()->getReference(Category::class, $categoryId));
+        $resource->setName($resourceDTO->getName());
+        $resource->setDescription($resourceDTO->getDescription());
+        $resource->setUrl($resourceDTO->getUrl());
+        $resource->setActive(true);
+
+        $this->getEntityManager()->persist($resource);
+        $this->getEntityManager()->flush();
+        $resourceDTO->setId($resource->getId());
+        return $resourceDTO;
+    }
+
+    public function getAllResources()
+    {
+        $resourceModel = $this->createQueryBuilder('r')
+            ->getQuery()
+            ->getResult();
+        $resourceDTOs = [];
+        foreach ($resourceModel as $resource) {
+            $resourceDTO = $this->convertToDTO($resource);
+            array_push($resourceDTOs, $resourceDTO);
+        }
+
+        return $resourceDTOs;
+    }
+
+    public function updateResource(ResourceDTO $resource, int $categoryId)
+    {
+        $resourceModel = $this->createQueryBuilder('r')
+            ->andWhere('r.id = :val')
+            ->setParameter('val', $resource->getId())
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        $resourceModel->setCategory($this->getEntityManager()->getReference(Category::class, $categoryId));
+        $resourceModel->setName($resource->getName());
+        $resourceModel->setDescription($resource->getDescription());
+        $resourceModel->setUrl($resource->getUrl());
+        $resourceModel->setActive(true);
+        $this->getEntityManager()->persist($resourceModel);
+        $this->getEntityManager()->flush();
     }
 
 }

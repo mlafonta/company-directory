@@ -1,13 +1,13 @@
-import {ClickAwayListener, Grow, MenuList, Paper, Popper} from "@mui/material";
+import {CircularProgress, ClickAwayListener, Grow, ListSubheader, MenuList, Paper, Popper} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import * as React from "react";
-import {useEffect} from "react";
 import '../styles/AppBar.css';
 import {ExpandLess, ExpandMore} from "@mui/icons-material";
 import Button from "@mui/material/Button";
 import {IGroup} from "../models/IGroup";
 import useAxiosFunction from "../hooks/useAxiosFunction";
 import axios from '../apis/companyDirectoryServer'
+import {useEffect} from "react";
 
 const TeamsMenuButton = () => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -50,6 +50,15 @@ const TeamsMenuButton = () => {
     // @ts-ignore
     return (
         <>
+            {loading &&
+                <Button
+                    disabled
+                    className="text"
+                    sx={{my: 2, color: 'inherit', display: 'flex'}}
+                >
+                    Teams
+                    <ExpandMore/>
+                </Button>}
             {!loading && !error && response && <>
                 <Button
                     className="text"

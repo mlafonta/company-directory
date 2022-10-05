@@ -2,8 +2,9 @@
 
 namespace App\Repository;
 
-use App\DTO\ResourceDTO;
+use App\Entity\GroupData;
 use App\Entity\GroupResource;
+use App\Entity\Resource;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -79,5 +80,31 @@ class GroupResourceRepository extends ServiceEntityRepository
             $simpleResourceArray[] = $resource['1'];
         }
         return $simpleResourceArray;
+    }
+
+    public function addResourceToGroup(int $resourceId, int $groupId): void
+    {
+        $groupResource = new GroupResource();
+
+        $groupResource->setGroupData($this->getEntityManager()->getReference(GroupData::class, $groupId));
+        $groupResource->setResource($this->getEntityManager()->getReference(Resource::class, $resourceId));
+
+        $this->getEntityManager()->persist($groupResource);
+        $this->getEntityManager()->flush();
+    }
+
+    public function deleteResourceFromGroup(int $groupId, int $resourceId)
+    {
+        $groupResource = $this->createQueryBuilder('g')
+            ->andWhere('(g.group_data) = :groupId')
+            ->andWhere('(g.resource) = :resourceId')
+            ->setParameter('groupId', $groupId)
+            ->setParameter('resourceId', $resourceId)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+            $this->getEntityManager()->remove($groupResource);
+            $this->getEntityManager()->flush();
+        ;
     }
 }
