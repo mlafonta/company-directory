@@ -1,11 +1,6 @@
-import KipsuAppBar from "../components/AppBar";
-import * as React from "react";
-
+import * as React from 'react';
 
 const AdminRequest = () => {
-    return (
-        <>
-        </>
-    );
+    return <></>;
 };
 export default AdminRequest;

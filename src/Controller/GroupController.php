@@ -16,22 +16,14 @@ class GroupController extends AbstractController
 
 
     #[Route('/api/v1/groups', methods: ['GET'])]
-    public function listGroups(): JsonResponse {
-
-        $groups = $this->groupService->getAllGroups();
-        return $this->json($groups);
-
+    public function getAllGroups(): JsonResponse {
+        $groupDTOs = $this->groupService->getAllGroups();
+        return $this->json($groupDTOs);
     }
 
-    #[Route('/api/v1/groups/{id}', methods: ['GET'])]
-    public function getGroupById(int $id): JsonResponse {
-
-        $group = $this->groupService->getGroupById($id);
-        if (!$group) {
-            throw $this->createNotFoundException('Group not found');
-        }
-
-        return $this->json($group);
-
+    #[Route('/api/v1/groups/{groupId}', methods: ['GET'])]
+    public function getGroupById(int $groupId): JsonResponse {
+        $groupDTO = $this->groupService->getGroupById($groupId);
+        return $this->json($groupDTO);
     }
 }

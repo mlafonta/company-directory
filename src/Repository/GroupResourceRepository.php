@@ -23,88 +23,45 @@ class GroupResourceRepository extends ServiceEntityRepository
         parent::__construct($registry, GroupResource::class);
     }
 
-    public function add(GroupResource $entity, bool $flush = false): void
+    public function findResourceIdsByGroupId(int $groupId): array
     {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(GroupResource $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-//    /**
-//     * @return GroupResource[] Returns an array of GroupResource objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('g.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?GroupResource
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
-
-    public function findResourceIdsByGroupId(int $id): array
-    {
-        $resources = $this->createQueryBuilder('g')
+        $resourceModels = $this->createQueryBuilder('g')
             ->select('(g.resource)')
             ->andWhere('(g.group_data) = :id')
-            ->setParameter('id', $id)
+            ->setParameter('id', $groupId)
             ->getQuery()
             ->getScalarResult()
         ;
-        $simpleResourceArray= array();
-        foreach ($resources as $resource) {
-            $simpleResourceArray[] = $resource['1'];
+        $resourceIds= array();
+        foreach ($resourceModels as $resourceModel) {
+            $resourceIds[] = $resourceModel['1'];
         }
-        return $simpleResourceArray;
+        return $resourceIds;
     }
 
     public function addResourceToGroup(int $resourceId, int $groupId): void
     {
-        $groupResource = new GroupResource();
+        $groupResourceModel = new GroupResource();
+        $groupResourceModel->setGroupData($this->getEntityManager()->getReference(GroupData::class, $groupId));
+        $groupResourceModel->setResource($this->getEntityManager()->getReference(Resource::class, $resourceId));
+        $this->commitToDatabase($groupResourceModel);
+    }
 
-        $groupResource->setGroupData($this->getEntityManager()->getReference(GroupData::class, $groupId));
-        $groupResource->setResource($this->getEntityManager()->getReference(Resource::class, $resourceId));
+    public function deleteResourceFromGroup(int $groupId, int $resourceId): void
+    {
+        $groupResourceModel = $this->findOneBy(array('group' => $groupId, 'resource' => $resourceId));
+        $this->removeFromDatabase($groupResourceModel);
+    }
 
-        $this->getEntityManager()->persist($groupResource);
+    private function commitToDatabase(GroupResource $groupResourceModel): void
+    {
+        $this->getEntityManager()->persist($groupResourceModel);
         $this->getEntityManager()->flush();
     }
 
-    public function deleteResourceFromGroup(int $groupId, int $resourceId)
+    private function removeFromDatabase(GroupResource $groupResourceModel): void
     {
-        $groupResource = $this->createQueryBuilder('g')
-            ->andWhere('(g.group_data) = :groupId')
-            ->andWhere('(g.resource) = :resourceId')
-            ->setParameter('groupId', $groupId)
-            ->setParameter('resourceId', $resourceId)
-            ->getQuery()
-            ->getOneOrNullResult();
-
-            $this->getEntityManager()->remove($groupResource);
-            $this->getEntityManager()->flush();
-        ;
+        $this->getEntityManager()->remove($groupResourceModel);
+        $this->getEntityManager()->flush();
     }
 }

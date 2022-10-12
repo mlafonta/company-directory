@@ -21,57 +21,51 @@ class PositionRepository extends ServiceEntityRepository
         parent::__construct($registry, Position::class);
     }
 
-    public function add(Position $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(Position $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-//    /**
-//     * @return Position[] Returns an array of Position objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Position
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
-
-    public function findPositionIdsByGroupId(int $id)
+    public function findPositionIdsByGroupId(int $groupId): array
     {
         return $this->createQueryBuilder('p')
             ->select('p.id')
             ->andWhere('(p.group_data) = :id')
-            ->setParameter('id', $id)
+            ->setParameter('id', $groupId)
             ->getQuery()
             ->getResult();
+    }
 
+    public function findGroupIdByPositionId(int $positionId): int
+    {
+        return $this->createQueryBuilder('p')
+            ->select('(p.group_data)')
+            ->andWhere('p.id = :id')
+            ->setParameter('id', $positionId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function findGroupLeadPositionIdByGroupId(?int $groupId)
+    {
+        $groupLeadPositionId = $this->createQueryBuilder('p')
+            ->select('p.id')
+            ->andWhere('(p.group_data) = :id')
+            ->andWhere('p.is_lead = true')
+            ->setParameter('id', $groupId)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if ($groupLeadPositionId) {
+            return $groupLeadPositionId['id'];
+        } else {
+            return null;
+        }
+    }
+
+    public function findNonLeadPositionIdsByGroupId(int $groupId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.id')
+            ->andWhere('(p.group_data) = :id')
+            ->andWhere('p.is_lead = false')
+            ->setParameter('id', $groupId)
+            ->getQuery()
+            ->getResult();
     }
 }

@@ -39,14 +39,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $last_name = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $start_date = null;
+    #[ORM\Column(length: 255)]
+    private ?string $start_date = null;
 
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $slack_username = null;
+    private ?string $slack_member_id = null;
 
     #[ORM\Column]
     private ?bool $active = null;
@@ -136,112 +136,149 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
+    /**
+     * @return string|null
+     */
     public function getFirstName(): ?string
     {
         return $this->first_name;
     }
 
-    public function setFirstName(string $first_name): self
+    /**
+     * @param string|null $first_name
+     */
+    public function setFirstName(?string $first_name): void
     {
         $this->first_name = $first_name;
-
-        return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getLastName(): ?string
     {
         return $this->last_name;
     }
 
-    public function setLastName(string $last_name): self
+    /**
+     * @param string|null $last_name
+     */
+    public function setLastName(?string $last_name): void
     {
         $this->last_name = $last_name;
-
-        return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    /**
+     * @return string|null
+     */
+    public function getStartDate(): ?string
     {
         return $this->start_date;
     }
 
-    public function setStartDate(\DateTimeInterface $start_date): self
+    /**
+     * @param string|null $start_date
+     */
+    public function setStartDate(?string $start_date): void
     {
         $this->start_date = $start_date;
-
-        return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getImage(): ?string
     {
         return $this->image;
     }
 
-    public function setImage(string $image): self
+    /**
+     * @param string|null $image
+     */
+    public function setImage(?string $image): void
     {
         $this->image = $image;
-
-        return $this;
     }
 
-    public function getSlackUsername(): ?string
+    /**
+     * @return string|null
+     */
+    public function getSlackMemberId(): ?string
     {
-        return $this->slack_username;
+        return $this->slack_member_id;
     }
 
-    public function setSlackUsername(string $slack_username): self
+    /**
+     * @param string|null $slack_member_id
+     */
+    public function setSlackMemberId(?string $slack_member_id): void
     {
-        $this->slack_username = $slack_username;
-
-        return $this;
+        $this->slack_member_id = $slack_member_id;
     }
 
-    public function isActive(): ?bool
+    /**
+     * @return bool|null
+     */
+    public function getActive(): ?bool
     {
         return $this->active;
     }
 
-    public function setActive(bool $active): self
+    /**
+     * @param bool|null $active
+     */
+    public function setActive(?bool $active): void
     {
         $this->active = $active;
-
-        return $this;
     }
 
-
-    public function getPronounId(): ?Pronoun
+    /**
+     * @return Pronoun|null
+     */
+    public function getPronoun(): ?Pronoun
     {
-        return $this->pronoun_id;
+        return $this->pronoun;
     }
 
-    public function setPronounId(?Pronoun $pronoun_id): self
+    /**
+     * @param Pronoun|null $pronoun
+     */
+    public function setPronoun(?Pronoun $pronoun): void
     {
-        $this->pronoun_id = $pronoun_id;
-
-        return $this;
+        $this->pronoun = $pronoun;
     }
 
-    public function getDeskId(): ?Desk
+    /**
+     * @return Desk|null
+     */
+    public function getDesk(): ?Desk
     {
-        return $this->desk_id;
+        return $this->desk;
     }
 
-    public function setDeskId(?Desk $desk_id): self
+    /**
+     * @param Desk|null $desk
+     */
+    public function setDesk(?Desk $desk): void
     {
-        $this->desk_id = $desk_id;
-
-        return $this;
+        $this->desk = $desk;
     }
 
+    /**
+     * @return Position|null
+     */
     public function getPosition(): ?Position
     {
         return $this->position;
     }
 
-    public function setPosition(?Position $position): self
+    /**
+     * @param Position|null $position
+     */
+    public function setPosition(?Position $position): void
     {
         $this->position = $position;
-
-        return $this;
     }
+
+
 }

@@ -30,94 +30,94 @@ class GroupService
         $this->positionRepository = $positionRepository;
         $this->userRepository = $userRepository;
     }
-    /**
-     * @return GroupDTO[]
-     */
+
     public function getAllGroups(): array
     {
-       $groups = $this->groupRepository->getAllGroups();
-       foreach ($groups as $group) {
-           $this->addMembers($group);
-           $this->addParentAndChildren($group);
+       $groupDTOs = $this->groupRepository->findAllGroups();
+       foreach ($groupDTOs as $groupDTO) {
+           $this->addDTOValues($groupDTO);
        }
-       foreach ($groups as $group) {
-           $this->addType($group);
-       }
-       return $groups;
+       return $groupDTOs;
     }
 
-    public function getGroupById(int $id): GroupDTO | null
+    public function getGroupById(int $groupId): GroupDTO | null
     {
-        $group = $this->groupRepository->getOneById($id);
-        if ($group) {
-            $this->addMembers($group);
-            $this->addParentAndChildren($group);
-            $this->addType($group);
-            return $group;
+        $groupDTO = $this->groupRepository->findGroupById($groupId);
+        if ($groupDTO) {
+            $this->addDTOValues($groupDTO);
+            return $groupDTO;
         } else {
             return null;
         }
     }
 
-    private function addParentAndChildren(GroupDTO $group): void
+    private function addDTOValues(GroupDTO $groupDTO): void
     {
-        $parent = $this->parentChildRepository->findParentIdByChildId($group->getId());
-        if ($parent) {
-            $group->setParent($this->groupRepository->getOneById($parent));
-        }
-
-        $childArray = $this->parentChildRepository->findChildrenIdsByParentId($group->getId());
-        $simpleChildArray = array();
-        $childDTOarray = array();
-        foreach ($childArray as $child){
-            $simpleChildArray[] = $child['1'];
-        }
-        foreach ($simpleChildArray as $child) {
-            array_push($childDTOarray, $this->groupRepository->getOneById($child));
-        }
-        $group->setChildren($childDTOarray);
+        $this->addChildren($groupDTO);
+        $this->addMembers($groupDTO);
+        $this->addParent($groupDTO);
+        $this->addType($groupDTO);
     }
 
-    private function addMembers(?GroupDTO $group): void
-
+    private function addChildren(GroupDTO $groupDTO): void
     {
-        $memberPositionIds = $this->positionRepository->findPositionIdsByGroupId($group->getId());
-        $simpleMemberPositionIds = array();
-        $memberDTOArray = array();
-        foreach ($memberPositionIds as $memberPositionId){
-            $simpleMemberPositionIds[] = $memberPositionId['id'];
+        $childIds = $this->parentChildRepository->findChildIdsByParentId($groupDTO->getId());
+        $filteredChildIds = array();
+        $childDTOs = array();
+        foreach ($childIds as $childId) {
+            $filteredChildIds[] = $childId['1'];
         }
-        foreach ($simpleMemberPositionIds as $memberIds) {
-            $positionDTOArray = $this->userRepository->findByPositionId($memberIds);
-                foreach ($positionDTOArray as $positionDTO) {
-                    array_push($memberDTOArray, $positionDTO);
+        foreach ($filteredChildIds as $filteredChildId) {
+            array_push($childDTOs, $this->groupRepository->findGroupById($filteredChildId));
+        }
+        $groupDTO->setChildren($childDTOs);
+    }
+
+    private function addParent(GroupDTO $groupDTO): void
+    {
+        $parentId = $this->parentChildRepository->findParentIdByChildId($groupDTO->getId());
+        if ($parentId) {
+            $groupDTO->setParent($this->groupRepository->findGroupById($parentId));
+        }
+    }
+
+    private function addMembers(?GroupDTO $groupDTO): void
+    {
+        $memberPositionIds = $this->positionRepository->findPositionIdsByGroupId($groupDTO->getId());
+        $filteredMemberPositionIds = array();
+        $memberDTOs = array();
+        foreach ($memberPositionIds as $memberPositionId){
+            $filteredMemberPositionIds[] = $memberPositionId['id'];
+        }
+        foreach ($filteredMemberPositionIds as $filteredMemberPositionId) {
+            $positionDTOs = $this->userRepository->findUsersByPositionId($filteredMemberPositionId);
+                if($positionDTOs) {
+                    foreach ($positionDTOs as $positionDTO) {
+                        array_push($memberDTOs, $positionDTO);
+                    }
                 }
         }
-        $group->setMembers($memberDTOArray);
+        $groupDTO->setMembers($memberDTOs);
     }
 
-    /**
-     * @param GroupDTO|null $group
-     * @return void
-     */
-    private function addType(?GroupDTO $group): void
+    private function addType(?GroupDTO $groupDTO): void
     {
-        $parent = null;
-        if ($group->getParent()) {
-            $parent = $this->groupRepository->getOneById($group->getParent()->getId());
+        $parentDTO = null;
+        if ($groupDTO->getParent()) {
+            $parentDTO = $this->groupRepository->findGroupById($groupDTO->getParent()->getId());
         }
-        if ($parent) {
-            $this->addParentAndChildren($parent);
-            if (!$parent->getParent()) {
-                $parent->setType(self::TYPE_COMPANY);
+        if ($parentDTO) {
+            $this->addParent($parentDTO);
+            if (!$parentDTO->getParent()) {
+                $parentDTO->setType(self::TYPE_COMPANY);
             }
         }
-        if (!$parent) {
-            $group->setType(self::TYPE_COMPANY);
-        } elseif ($parent->getType() == self::TYPE_COMPANY || $group->getChildren()) {
-            $group->setType(self::TYPE_DEPARTMENT);
+        if (!$parentDTO) {
+            $groupDTO->setType(self::TYPE_COMPANY);
+        } elseif ($parentDTO->getType() == self::TYPE_COMPANY || $groupDTO->getChildren()) {
+            $groupDTO->setType(self::TYPE_DEPARTMENT);
         } else {
-            $group->setType(self::TYPE_TEAM);
+            $groupDTO->setType(self::TYPE_TEAM);
         }
     }
 }

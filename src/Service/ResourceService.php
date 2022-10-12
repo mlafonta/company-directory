@@ -4,7 +4,6 @@ namespace App\Service;
 
 use App\DTO\ResourceDTO;
 use App\Repository\CategoryRepository;
-use App\Repository\GroupRepository;
 use App\Repository\GroupResourceRepository;
 use App\Repository\ResourceRepository;
 
@@ -13,40 +12,40 @@ class ResourceService
     private ResourceRepository $resourceRepository;
     private CategoryRepository $categoryRepository;
     private GroupResourceRepository $groupResourceRepository;
-    private GroupRepository $groupRepository;
 
     public function __construct(
         ResourceRepository $resourceRepository,
         CategoryRepository $categoryRepository,
         GroupResourceRepository $groupResourceRepository,
-        GroupRepository $groupRepository
     ) {
         $this->resourceRepository = $resourceRepository;
         $this->categoryRepository = $categoryRepository;
         $this->groupResourceRepository = $groupResourceRepository;
-        $this->groupRepository = $groupRepository;
     }
 
-    /**
-     * @return ResourceDTO[]
-     */
-    public function getResourcesForGroup(int $id): array
+    public function getAllResources(): array
     {
-        $resourceIds = $this->groupResourceRepository->findResourceIdsByGroupId($id);
+        return $this->resourceRepository->findAllResources();
+    }
+
+    public function getResourcesByGroupId(int $groupId): array
+    {
+        $resourceIds = $this->groupResourceRepository->findResourceIdsByGroupId($groupId);
         $resourceDTOs[] = [];
         foreach ($resourceIds as $resourceId) {
-            $resource = $this->resourceRepository->findById($resourceId);
-            $this->categoryRepository->addCategory($resource);
-            if (!in_array($resource, $resourceDTOs)) {
-                array_push($resourceDTOs, $resource);
+            $resourceDTO = $this->resourceRepository->findResourceById($resourceId);
+            if (!in_array($resourceDTO, $resourceDTOs)) {
+                array_push($resourceDTOs, $resourceDTO);
             }
         }
         return $resourceDTOs;
     }
 
-    public function addNewResourceToGroup(ResourceDTO $resource, int $groupId): void
+    public function addNewResourceToGroup(ResourceDTO $resourceDTO, int $groupId): void
     {
-        $this->groupResourceRepository->addResourceToGroup($this->resourceRepository->addResource($resource, $this->categoryRepository->getIdByCategory($resource->getCategory()))->getId(),$this->groupRepository->getOneById($groupId)->getId()) ;
+        $categoryId = $this->categoryRepository->findCategoryIdByName($resourceDTO->getCategory());
+        $resourceId = $this->resourceRepository->addResource($resourceDTO, $categoryId)->getId();
+        $this->groupResourceRepository->addResourceToGroup($resourceId, $groupId) ;
     }
 
     public function addExistingResourceToGroup(ResourceDTO $resource, int $groupId): void
@@ -54,22 +53,10 @@ class ResourceService
         $this->groupResourceRepository->addResourceToGroup($resource->getId(), $groupId);
     }
 
-
-    /**
-     * @return ResourceDTO[]
-     */
-    public function getAllResources(): array
+    public function updateResource(ResourceDTO $resourceDTO)
     {
-        $resources = $this->resourceRepository->getAllResources();
-        foreach ($resources as $resource) {
-            $this->categoryRepository->addCategory($resource);
-        }
-        return $resources;
-    }
-
-    public function updateResource(ResourceDTO $resource)
-    {
-        $this->resourceRepository->updateResource($resource, $this->categoryRepository->getIdByCategory($resource->getCategory()));
+        $categoryId = $this->categoryRepository->findCategoryIdByName($resourceDTO->getCategory());
+        $this->resourceRepository->updateResource($resourceDTO, $categoryId);
     }
 
     public function deleteResourceFromGroup(int $groupId, int $resourceId)

@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\DTO\GroupDTO;
 use App\Entity\ParentChild;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -23,47 +22,24 @@ class ParentChildRepository extends ServiceEntityRepository
         parent::__construct($registry, ParentChild::class);
     }
 
-    public function add(ParentChild $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(ParentChild $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function findParentIdByChildId(int $id): int | null
-    {
-        $parentChild = $this->createQueryBuilder('p')
-            ->andWhere('(p.child) = :val')
-            ->setParameter('val', $id)
-            ->getQuery()
-            ->getOneOrNullResult();
-
-        if($parentChild){
-            return $parentChild->getParent()->getId();
-        } else {
-            return null;
-        }
-
-    }
-
-    public function findChildrenIdsByParentId(int $id): array
+    public function findChildIdsByParentId(int $parentId): array
     {
         return $this->createQueryBuilder('p')
             ->select('(p.child)')
             ->andWhere('(p.parent) = :id')
-            ->setParameter('id', $id)
+            ->setParameter('id', $parentId)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findParentIdByChildId(int $childId): int | null
+    {
+        $parentChildModel = $this->findOneBy(array('child' => $childId));
+        if($parentChildModel){
+            return $parentChildModel->getParent()->getId();
+        } else {
+            return null;
+        }
+
     }
 }

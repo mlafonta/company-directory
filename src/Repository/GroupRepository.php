@@ -23,80 +23,33 @@ class GroupRepository extends ServiceEntityRepository
         parent::__construct($registry, GroupData::class);
     }
 
-    public function add(GroupData $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(GroupData $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-//    /**
-//     * @return GroupData[] Returns an array of GroupData objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('g.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-    public function getOneById($id): ?GroupDTO
-    {
-        $model = $this->createQueryBuilder('g')
-            ->andWhere('g.id = :val')
-            ->setParameter('val', $id)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-
-        if ($model) {
-            return $this->convertToDTO($model);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * @return GroupDTO[]
-     */
-    public function getAllGroups(): array
+    public function findAllGroups(): array
     {
         $groupModels = $this->findAll();
         $groupDTOs = [];
-        foreach ($groupModels as $model ) {
-            $groupDTO = $this->convertToDTO($model);
+        foreach ($groupModels as $groupModel) {
+            $groupDTO = $this->convertModelToDTO($groupModel);
             array_push($groupDTOs, $groupDTO);
         }
         return $groupDTOs;
     }
 
-    private function convertToDTO(GroupData $model): GroupDTO {
-        $groupDTO = new GroupDTO();
-        $groupDTO->setId($model->getId());
-        $groupDTO->setName($model->getName());
-        $groupDTO->setDescription(($model->getDescription()));
-
-        return $groupDTO;
+    public function findGroupById($groupId): ?GroupDTO
+    {
+        $groupModel = $this->find($groupId);
+        if ($groupModel) {
+            return $this->convertModelToDTO($groupModel);
+        } else {
+            return null;
+        }
     }
 
-    public function findIdbyPositionId(int $id)
-    {
+    private function convertModelToDTO(GroupData $groupModel): GroupDTO {
+        $groupDTO = new GroupDTO();
+        $groupDTO->setId($groupModel->getId());
+        $groupDTO->setName($groupModel->getName());
+        $groupDTO->setDescription(($groupModel->getDescription()));
+        return $groupDTO;
     }
 
 

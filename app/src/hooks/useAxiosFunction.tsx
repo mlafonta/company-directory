@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from 'react';
 
 // @ts-ignore
 const useAxiosFunction = () => {
@@ -9,12 +9,7 @@ const useAxiosFunction = () => {
 
     // @ts-ignore
     const axiosFetch = async (configObj) => {
-        const {
-            axiosInstance,
-            method,
-            url,
-            requestConfig = {}
-        } = configObj;
+        const { axiosInstance, method, url, requestConfig = {} } = configObj;
 
         try {
             setLoading(true);
@@ -23,7 +18,7 @@ const useAxiosFunction = () => {
             setController(ctrl);
             const res = await axiosInstance[method.toLowerCase()](url, {
                 ...requestConfig,
-                signal: ctrl.signal
+                signal: ctrl.signal,
             });
             setResponse(res.data);
         } catch (err) {
@@ -32,14 +27,14 @@ const useAxiosFunction = () => {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     useEffect(() => {
         // @ts-ignore
         return () => controller && controller.abort();
-    },[controller])
+    }, [controller]);
 
     return [response, error, loading, axiosFetch];
-}
+};
 
 export default useAxiosFunction;

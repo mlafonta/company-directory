@@ -7,13 +7,13 @@ import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
-import {ClickAwayListener, Grow, InputBase, MenuList, Paper, Popper,} from "@mui/material";
-import {Search} from "@mui/icons-material";
-import MenuButtonWithIcon from "./MenuButtonWithIcon";
-import {alpha, styled} from '@mui/material/styles';
+import { ClickAwayListener, Grow, InputBase, MenuList, Paper, Popper } from '@mui/material';
+import { Search } from '@mui/icons-material';
+import MenuButtonWithIcon from './MenuButtonWithIcon';
+import { alpha, styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
-import TeamsMenuButton from "./TeamsMenuButton";
-import ResourcesMenuButton from "./ResourcesMenuButton";
+import TeamsMenuButton from './TeamsMenuButton';
+import ResourcesMenuButton from './ResourcesMenuButton';
 
 const settings = ['My Profile', 'Logout'];
 
@@ -26,11 +26,9 @@ const KipsuAppBar = () => {
     };
     const handleClose = () => {
         setOpen(false);
-
     };
 
-
-    const Search = styled('div')(({theme}) => ({
+    const Search = styled('div')(({ theme }) => ({
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
         backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -45,7 +43,7 @@ const KipsuAppBar = () => {
         },
     }));
 
-    const SearchIconWrapper = styled('div')(({theme}) => ({
+    const SearchIconWrapper = styled('div')(({ theme }) => ({
         padding: theme.spacing(0, 2),
         height: '100%',
         position: 'absolute',
@@ -55,7 +53,7 @@ const KipsuAppBar = () => {
         justifyContent: 'center',
     }));
 
-    const StyledInputBase = styled(InputBase)(({theme}) => ({
+    const StyledInputBase = styled(InputBase)(({ theme }) => ({
         color: 'inherit',
         '& .MuiInputBase-input': {
             padding: theme.spacing(1, 1, 1, 0),
@@ -76,8 +74,8 @@ const KipsuAppBar = () => {
             <AppBar position="static" className="appBar" elevation={0}>
                 <Toolbar disableGutters>
                     <Link href="/">
-                        <Box sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}>
-                            <img src='/images/Kipsu-Logo.png' alt="Kipsu Logo" className="logo"/>
+                        <Box sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}>
+                            <img src="/images/Kipsu-Logo.png" alt="Kipsu Logo" className="logo" />
                         </Box>
                     </Link>
                     {/*/!* Hamburger Menu *!/*/}
@@ -122,15 +120,15 @@ const KipsuAppBar = () => {
                     {/*</Box>*/}
                     {/* Site Name for small screens */}
                     {/*<Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}, mt: 2}}>*/}
-                    <Box m="auto" sx={{display: {xs: 'flex', md: 'none'}, mt: 4}}>
-                        <Link href="/" color="inherit" style={{textDecoration: 'none'}}>
+                    <Box m="auto" sx={{ display: { xs: 'flex', md: 'none' }, mt: 4 }}>
+                        <Link href="/" color="inherit" style={{ textDecoration: 'none' }}>
                             <Typography className="link">Kipsu Company Directory</Typography>
                         </Link>
                     </Box>
                     {/* Dropdown Menus */}
-                    <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
-                        <TeamsMenuButton/>
-                        <ResourcesMenuButton groupId={1}/>
+                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                        <TeamsMenuButton />
+                        <ResourcesMenuButton groupId={1} />
                         {/*<Button href="\org-chart" className="text" sx={{color: "#FFFFFF"}}>Org Chart</Button>*/}
                     </Box>
                     {/*/!* Search Bar *!/*/}
@@ -151,6 +149,7 @@ const KipsuAppBar = () => {
                     {/*</Box>*/}
                 </Toolbar>
             </AppBar>
-        </>);
+        </>
+    );
 };
 export default KipsuAppBar;

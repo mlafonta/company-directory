@@ -23,117 +23,64 @@ class ResourceRepository extends ServiceEntityRepository
         parent::__construct($registry, Resource::class);
     }
 
-    public function add(Resource $entity, bool $flush = false): void
+    public function findAllResources(): array
     {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
+        $resourceModels = $this->findAll();
+        $resourceDTOs = [];
+        foreach ($resourceModels as $resourceModel) {
+            $resourceDTO = $this->convertModelToDTO($resourceModel);
+            array_push($resourceDTOs, $resourceDTO);
         }
+        return $resourceDTOs;
     }
 
-    public function remove(Resource $entity, bool $flush = false): void
+    public function findResourceById(int $resourceId): ?ResourceDTO
     {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-//    /**
-//     * @return IResource[] Returns an array of IResource objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('r.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?IResource
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
-
-    public function findById(int $id): ?ResourceDTO
-    {
-        $resourceModel = $this->createQueryBuilder('r')
-            ->andWhere('r.id = :val')
-            ->setParameter('val', $id)
-            ->getQuery()
-            ->getOneOrNullResult();
-
-        return $this->convertToDTO($resourceModel);
-    }
-
-    private function convertToDTO(Resource $model): ResourceDTO
-    {
-        $resourceDTO = new ResourceDTO();
-        $resourceDTO->setId($model->getId());
-        $resourceDTO->setName($model->getName());
-        $resourceDTO->setCategory(strval($model->getCategory()->getId()));
-        $resourceDTO->setDescription($model->getDescription());
-        $resourceDTO->setUrl($model->getUrl());
-        $resourceDTO->setActive($model->isActive());
-
-        return $resourceDTO;
+        $resourceModel = $this->find($resourceId);
+        return $this->convertModelToDTO($resourceModel);
     }
 
     public function addResource(ResourceDTO $resourceDTO, int $categoryId): ResourceDTO
     {
-        $resource = new Resource();
-        $resource->setCategory($this->getEntityManager()->getReference(Category::class, $categoryId));
-        $resource->setName($resourceDTO->getName());
-        $resource->setDescription($resourceDTO->getDescription());
-        $resource->setUrl($resourceDTO->getUrl());
-        $resource->setActive(true);
-
-        $this->getEntityManager()->persist($resource);
-        $this->getEntityManager()->flush();
-        $resourceDTO->setId($resource->getId());
+        $resourceModel = new Resource();
+        $this->convertDTOToModel($resourceModel, $categoryId, $resourceDTO);
+        $this->commitToDatabase($resourceModel);
+        $resourceDTO->setId($resourceModel->getId());
         return $resourceDTO;
     }
 
-    public function getAllResources()
+    public function updateResource(ResourceDTO $resourceDTO, int $categoryId)
     {
-        $resourceModel = $this->createQueryBuilder('r')
-            ->getQuery()
-            ->getResult();
-        $resourceDTOs = [];
-        foreach ($resourceModel as $resource) {
-            $resourceDTO = $this->convertToDTO($resource);
-            array_push($resourceDTOs, $resourceDTO);
-        }
-
-        return $resourceDTOs;
+        $resourceModel = $this->find($resourceDTO->getId());
+        $this->convertDTOToModel($resourceModel, $categoryId, $resourceDTO);
+        $this->commitToDatabase($resourceModel);
     }
 
-    public function updateResource(ResourceDTO $resource, int $categoryId)
+    private function commitToDatabase(?Resource $resourceModel): void
     {
-        $resourceModel = $this->createQueryBuilder('r')
-            ->andWhere('r.id = :val')
-            ->setParameter('val', $resource->getId())
-            ->getQuery()
-            ->getOneOrNullResult();
-
-        $resourceModel->setCategory($this->getEntityManager()->getReference(Category::class, $categoryId));
-        $resourceModel->setName($resource->getName());
-        $resourceModel->setDescription($resource->getDescription());
-        $resourceModel->setUrl($resource->getUrl());
-        $resourceModel->setActive(true);
         $this->getEntityManager()->persist($resourceModel);
         $this->getEntityManager()->flush();
+    }
+
+    private function convertModelToDTO(Resource $resourceModel): ResourceDTO
+    {
+        $resourceDTO = new ResourceDTO();
+        $resourceDTO->setId($resourceModel->getId());
+        $resourceDTO->setName($resourceModel->getName());
+        $resourceDTO->setCategory($this->getEntityManager()->getReference(Category::class, $resourceModel->getCategory()->getId())->getCategory());
+        $resourceDTO->setDescription($resourceModel->getDescription());
+        $resourceDTO->setUrl($resourceModel->getUrl());
+        $resourceDTO->setActive($resourceModel->isActive());
+        return $resourceDTO;
+    }
+
+    private function convertDTOToModel(Resource $resourceModel, int $categoryId, ResourceDTO $resourceDTO): void
+    {
+        $resourceModel->setCategory($this->getEntityManager()->getReference(Category::class, $categoryId));
+        $resourceModel->setName($resourceDTO->getName());
+        $resourceModel->setDescription($resourceDTO->getDescription());
+        $resourceModel->setUrl($resourceDTO->getUrl());
+        $resourceModel->setActive(true);
     }
 
 }
