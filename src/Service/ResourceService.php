@@ -25,19 +25,22 @@ class ResourceService
 
     public function getAllResources(): array
     {
-        return $this->resourceRepository->findAllResources();
+        $resourceDTOs = $this->resourceRepository->findAllResources();
+        usort($resourceDTOs, array($this, 'comparator'));
+        return $resourceDTOs;
     }
 
     public function getResourcesByGroupId(int $groupId): array
     {
         $resourceIds = $this->groupResourceRepository->findResourceIdsByGroupId($groupId);
-        $resourceDTOs[] = [];
+        $resourceDTOs = [];
         foreach ($resourceIds as $resourceId) {
             $resourceDTO = $this->resourceRepository->findResourceById($resourceId);
             if (!in_array($resourceDTO, $resourceDTOs)) {
                 array_push($resourceDTOs, $resourceDTO);
             }
         }
+        usort($resourceDTOs, array($this, 'comparator'));
         return $resourceDTOs;
     }
 
@@ -62,5 +65,10 @@ class ResourceService
     public function deleteResourceFromGroup(int $groupId, int $resourceId)
     {
         $this->groupResourceRepository->deleteResourceFromGroup($groupId, $resourceId);
+    }
+
+    private function comparator(ResourceDTO $resourceDTO1, ResourceDTO $resourceDTO2): int
+    {
+        return strcmp($resourceDTO1->getName(), $resourceDTO2->getName());
     }
 }

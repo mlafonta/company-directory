@@ -4,13 +4,12 @@ import React from 'react';
 import EditResource from './EditResource';
 import DeleteResource from './DeleteResource';
 
-type ResourceDisplayProps = {
+type DisplayResourceProps = {
     resource: IResource;
-    refresh: any;
-    group: number;
+    groupId: number;
 };
 
-const ResourceDisplay = ({ resource, refresh, group }: ResourceDisplayProps) => {
+const DisplayResource = ({ resource, groupId }: DisplayResourceProps) => {
     const [currentResource, setCurrentResource] = React.useState<IResource>(resource);
     const [edit, setEdit] = React.useState<boolean>(false);
     const [remove, setRemove] = React.useState<boolean>(false);
@@ -29,10 +28,8 @@ const ResourceDisplay = ({ resource, refresh, group }: ResourceDisplayProps) => 
                 <Grid item xs={1}></Grid>
                 <Grid item xs={7}>
                     {!edit && !remove && (
-                        <Typography variant="h4">
-                            <Link component="a" href={currentResource.url} target="_blank" variant="inherit">
-                                {currentResource.name}
-                            </Link>
+                        <Typography variant="h4" component="a" href={currentResource.url} target="_blank">
+                            {currentResource.name}
                         </Typography>
                     )}
                 </Grid>
@@ -65,11 +62,13 @@ const ResourceDisplay = ({ resource, refresh, group }: ResourceDisplayProps) => 
                         {currentResource.description}
                     </Typography>
                 )}
-                {edit && !remove && <EditResource resource={currentResource} refresh={refresh} />}
-                {!edit && remove && <DeleteResource resource={currentResource.id!} refresh={refresh} group={group} />}
+                {edit && !remove && <EditResource resource={currentResource} setEdit={setEdit} />}
+                {!edit && remove && (
+                    <DeleteResource resourceId={currentResource.id!} setRemove={setRemove} groupId={groupId} />
+                )}
             </Box>
         </>
     );
 };
 
-export default ResourceDisplay;
+export default DisplayResource;

@@ -1,29 +1,21 @@
-import axios from '../apis/companyDirectoryServer';
 import { Box, Button, Typography } from '@mui/material';
 import React from 'react';
-import useAxiosFunction from '../hooks/useAxiosFunction';
+import { useDeleteResourceFromGroupMutation } from '../apis/apiSlice';
 
 type DeleteResourceProps = {
-    resource: number;
-    refresh: any;
-    group: number;
+    resourceId: number;
+    setRemove: any;
+    groupId: number;
 };
 
-const DeleteResource = ({ resource, refresh, group }: DeleteResourceProps) => {
-    const [response, error, loading, axiosFetch] = useAxiosFunction();
+const DeleteResource = ({ resourceId, setRemove, groupId }: DeleteResourceProps) => {
+    const [deleteResource] = useDeleteResourceFromGroupMutation();
+
     const cancel = () => {
-        refresh();
+        setRemove(false);
     };
-    const handleSubmit = (event: any) => {
-        event.preventDefault();
-        // @ts-ignore
-        axiosFetch({
-            axiosInstance: axios,
-            method: 'DELETE',
-            url: '/groups/' + group + '/resources/' + resource,
-        }).then(() => {
-            refresh();
-        });
+    const handleSubmit = () => {
+        deleteResource({ groupId: groupId, resourceId: resourceId });
     };
     return (
         <>

@@ -1,20 +1,24 @@
 import { ClickAwayListener, Grow, MenuList, Paper, Popper } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/AppBar.css';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { IGroup } from '../models/IGroup';
-import useAxiosFunction from '../hooks/useAxiosFunction';
-import axios from '../apis/companyDirectoryServer';
+import { useGetGroupsQuery } from '../apis/apiSlice';
 
 const TeamsMenuButton = () => {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
-    const [response, error, loading, axiosFetch] = useAxiosFunction();
-    const teams: IGroup[] = [];
-    const departments: IGroup[] = [];
+    const { data, isLoading, error } = useGetGroupsQuery(undefined);
+    const [teams, setTeams] = useState<IGroup[]>([]);
+    const [departments, setDepartments] = useState<IGroup[]>([]);
+
+    useEffect(() => {
+        setTeams(data?.filter((group) => group.type === 'team') ?? []);
+        setDepartments(data?.filter((group) => group.type === 'department') ?? []);
+    }, [data]);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
         setOpen(true);
@@ -23,40 +27,15 @@ const TeamsMenuButton = () => {
         setOpen(false);
     };
 
-    const getData = () => {
-        // @ts-ignore
-        axiosFetch({
-            axiosInstance: axios,
-            method: 'GET',
-            url: '/groups',
-        });
-    };
-
-    useEffect(() => {
-        getData();
-    }, []);
-
-    if (!loading && !error && response) {
-        // @ts-ignore
-        response.forEach((item: IGroup) => {
-            if (item.type == 'team') {
-                teams.push(item);
-            } else if (item.type == 'department') {
-                departments.push(item);
-            }
-        });
-    }
-
-    // @ts-ignore
     return (
         <>
-            {loading && (
+            {isLoading && (
                 <Button disabled className="text" sx={{ my: 2, color: 'inherit', display: 'flex' }}>
                     Teams
                     <ExpandMore />
                 </Button>
             )}
-            {!loading && !error && response && (
+            {!isLoading && !error && data && (
                 <>
                     <Button className="text" onClick={handleClick} sx={{ my: 2, color: 'white', display: 'flex' }}>
                         Teams

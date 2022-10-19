@@ -1,11 +1,10 @@
 import { IUser } from '../models/IUser';
 import * as React from 'react';
-import { useEffect } from 'react';
-import { Box, Button, CircularProgress, Grid, Paper, Typography } from '@mui/material';
+import { Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Typography } from '@mui/material';
+import { useGetUserQuery } from '../apis/apiSlice';
 import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
-import useAxiosFunction from '../hooks/useAxiosFunction';
-import axios from '../apis/companyDirectoryServer';
+import { TreeNode } from 'react-organizational-chart';
 
 type OrgChartUserCardProps = {
     userId: number;
@@ -13,68 +12,117 @@ type OrgChartUserCardProps = {
 
 const OrgChartUserCard = ({ userId }: OrgChartUserCardProps) => {
     const [open, setOpen] = React.useState<boolean>(false);
-    const [response, error, loading, axiosFetch] = useAxiosFunction();
-    const getData = () => {
-        // @ts-ignore
-        axiosFetch({
-            axiosInstance: axios,
-            method: 'GET',
-            url: '/users/' + userId,
-        });
-    };
-    useEffect(() => {
-        getData();
-    }, []);
-    const emptyUser: IUser = {};
-    const user: IUser = response ? (response as IUser) : emptyUser;
+    const { data, isLoading, error } = useGetUserQuery(userId);
     const handleClick = () => {
         setOpen((prevOpen) => !prevOpen);
     };
 
     return (
-        <Grid item>
-            {loading && <CircularProgress />}
-            {!loading && (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        '& > :not(style)': {
-                            m: 1,
-                            width: 128,
-                            height: 128,
-                        },
-                    }}
-                >
-                    <Paper elevation={8}>
-                        <Typography
-                            variant="h4"
-                            fontWeight="bold"
-                            sx={{ mb: 2 }}
-                            component="a"
-                            href={`/user/${user?.id}`}
+        <>
+            {isLoading && <TreeNode label={<CircularProgress />} />}
+            {!isLoading && !error && data?.reports?.length! > 0 && (
+                <TreeNode
+                    label={
+                        <Card
+                            elevation={3}
+                            style={{
+                                width: 200,
+                                textAlign: 'center',
+                                display: 'inline-block',
+                            }}
                         >
-                            {user.name}
-                        </Typography>
-                        {user?.reports?.length! > 0 && (
-                            <Button onClick={handleClick} color="inherit" sx={{ mb: 2 }}>
-                                {open ? (
-                                    <IndeterminateCheckBoxOutlinedIcon sx={{ fontSize: 35 }} />
-                                ) : (
-                                    <AddBoxOutlinedIcon sx={{ fontSize: 35 }} />
+                            {data?.lead && data?.id !== 1 && (
+                                <CardHeader
+                                    title={data?.group?.name}
+                                    style={{ textAlign: 'center' }}
+                                    component="a"
+                                    href={`/group/${data?.group?.id}`}
+                                />
+                            )}
+                            {data?.lead && data?.id === 1 && (
+                                <CardHeader
+                                    title={data?.group?.name}
+                                    style={{ textAlign: 'center' }}
+                                    component="a"
+                                    href={`/`}
+                                />
+                            )}
+                            {!data?.lead && (
+                                <CardHeader title={data?.position} style={{ textAlign: 'center', spacing: 10 }} />
+                            )}
+                            <CardContent>
+                                <img src={data?.image} style={{ maxWidth: '90%' }} />
+                                {data?.lead && <Typography variant="subtitle1">{data?.position}</Typography>}
+                                <Typography variant="subtitle1" component="a" href={`/user/${data?.id}`}>
+                                    {data?.name}
+                                </Typography>
+                            </CardContent>
+                            <CardActions
+                                style={{ display: 'flex', justifyContent: 'space-around', marginBottom: 'auto' }}
+                            >
+                                {data?.reports?.length! > 0 && (
+                                    <Button onClick={handleClick} color="inherit" sx={{ mb: 2 }}>
+                                        {open ? (
+                                            <IndeterminateCheckBoxOutlinedIcon sx={{ fontSize: 30 }} />
+                                        ) : (
+                                            <AddBoxOutlinedIcon sx={{ fontSize: 30 }} />
+                                        )}
+                                    </Button>
                                 )}
-                            </Button>
-                        )}
-                    </Paper>
-                </Box>
+                            </CardActions>
+                        </Card>
+                    }
+                >
+                    {open &&
+                        data?.reports?.map((report: IUser, key: number) => (
+                            <OrgChartUserCard userId={report?.id!} key={key} />
+                        ))}
+                </TreeNode>
             )}
-            <Grid container item justifyContent="center" wrap="nowrap">
-                {open &&
-                    user?.reports?.map((report: IUser, key: number) => (
-                        <OrgChartUserCard userId={report?.id!} key={key} />
-                    ))}
-            </Grid>
-        </Grid>
+
+            {!isLoading && data?.reports?.length === 0 && (
+                <TreeNode
+                    label={
+                        <Card
+                            elevation={3}
+                            style={{
+                                borderRadius: 12,
+                                width: 200,
+                                textAlign: 'center',
+                                display: 'inline-block',
+                            }}
+                        >
+                            {data?.lead && data?.id !== 1 && (
+                                <CardHeader
+                                    title={data?.group?.name}
+                                    style={{ textAlign: 'center' }}
+                                    component="a"
+                                    href={`/group/${data?.group?.id}`}
+                                />
+                            )}
+                            {data?.lead && data?.id === 1 && (
+                                <CardHeader
+                                    title={data?.group?.name}
+                                    style={{ textAlign: 'center' }}
+                                    component="a"
+                                    href={`/`}
+                                />
+                            )}
+                            {!data?.lead && (
+                                <CardHeader title={data?.position} style={{ textAlign: 'center', spacing: 10 }} />
+                            )}
+                            <CardContent>
+                                <img src={data?.image} style={{ maxWidth: '90%' }} />
+                                {data?.lead && <Typography variant="subtitle1">{data?.position}</Typography>}
+                                <Typography variant="subtitle1" component="a" href={`/user/${data?.id}`}>
+                                    {data?.name}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    }
+                />
+            )}
+        </>
     );
 };
 export default OrgChartUserCard;

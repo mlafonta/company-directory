@@ -1,5 +1,5 @@
 import { IUser } from '../models/IUser';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Container, Grid, Paper, Typography } from '@mui/material';
 
 type DisplayTeamMembersProps = {
@@ -7,15 +7,6 @@ type DisplayTeamMembersProps = {
 };
 
 const DisplayTeamMembers = ({ members }: DisplayTeamMembersProps) => {
-    const [data, setData] = React.useState<IUser[]>(members);
-    const [member, setMember] = React.useState<IUser[]>();
-    const [loading, setLoading] = React.useState<boolean>(true);
-    useEffect(() => {
-        if (data != undefined) {
-            setMember(data.filter((leader) => !leader.lead));
-            setLoading(false);
-        }
-    }, [data]);
     return (
         <Container>
             <Grid container spacing={2} justifyContent="center" sx={{ marginTop: 8 }}>
@@ -25,8 +16,9 @@ const DisplayTeamMembers = ({ members }: DisplayTeamMembersProps) => {
                     </Paper>
                 </Grid>
                 <Grid xs={8} item container justifyContent="center">
-                    {!loading &&
-                        member?.map((member: IUser, key) => (
+                    {members
+                        .filter((leader) => !leader.lead)
+                        .map((member: IUser, key) => (
                             <Grid
                                 item
                                 container
@@ -51,7 +43,7 @@ const DisplayTeamMembers = ({ members }: DisplayTeamMembersProps) => {
                             </Grid>
                         ))}
                 </Grid>
-                <Grid xs={2} item></Grid>
+                <Grid xs={2} item />
             </Grid>
         </Container>
     );

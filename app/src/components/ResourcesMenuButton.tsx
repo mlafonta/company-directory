@@ -1,13 +1,12 @@
 import { ClickAwayListener, Grow, ListSubheader, MenuList, Paper, Popper } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import * as React from 'react';
-import { useEffect } from 'react';
 import '../styles/AppBar.css';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { IResource } from '../models/IResource';
-import axios from '../apis/companyDirectoryServer';
-import useAxiosFunction from '../hooks/useAxiosFunction';
+import { useGetResourcesByGroupQuery } from '../apis/apiSlice';
+import { useEffect, useState } from 'react';
 
 type ResourcesMenuButtonProps = {
     groupId: number;
@@ -16,9 +15,9 @@ type ResourcesMenuButtonProps = {
 const ResourcesMenuButton = ({ groupId }: ResourcesMenuButtonProps) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
-    const [response, error, loading, axiosFetch] = useAxiosFunction();
-    const categories: string[] = [];
-    const resources: IResource[] = [];
+    const { data, isLoading, error } = useGetResourcesByGroupQuery(groupId);
+    const [categories, setCategories] = React.useState<string[]>([]);
+    const [resources, setResources] = useState<IResource[]>([]);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
         setOpen(true);
@@ -27,39 +26,23 @@ const ResourcesMenuButton = ({ groupId }: ResourcesMenuButtonProps) => {
         setOpen(false);
     };
 
-    const getData = () => {
-        // @ts-ignore
-        axiosFetch({
-            axiosInstance: axios,
-            method: 'GET',
-            url: '/groups/' + groupId + '/resources',
-        });
-    };
-
     useEffect(() => {
-        getData();
-    }, []);
-
-    if (!loading && !error && response) {
-        // @ts-ignore
-        response.forEach((item: IResource) => {
-            if (item.active) {
-                resources.push(item);
-                if (!categories.includes(item.category!)) {
-                    categories.push(item.category!);
-                }
-            }
-        });
-    }
+        setCategories(
+            data?.map((resource) => resource.category!)
+                ? [...new Set(data?.map((resource) => resource.category!))]
+                : [],
+        );
+        setResources(data?.filter((dataResource) => dataResource.active)!);
+    }, [data]);
 
     return (
         <>
-            {loading && (
+            {isLoading && (
                 <Button className="text" disabled sx={{ my: 2, color: 'white', display: 'flex' }}>
                     Resources <ExpandMore />
                 </Button>
             )}
-            {!loading && !error && response && (
+            {!isLoading && !error && data && (
                 <>
                     <Button className="text" onClick={handleClick} sx={{ my: 2, color: 'white', display: 'flex' }}>
                         Resources
@@ -80,8 +63,8 @@ const ResourcesMenuButton = ({ groupId }: ResourcesMenuButtonProps) => {
                                             id="composition-menu"
                                             aria-labelledby="composition-button"
                                         >
-                                            {categories.map((header) => (
-                                                <div key={header}>
+                                            {categories.map((header, key) => (
+                                                <div key={key}>
                                                     <ListSubheader
                                                         className="resource-menu-header"
                                                         key={header}
@@ -92,10 +75,10 @@ const ResourcesMenuButton = ({ groupId }: ResourcesMenuButtonProps) => {
                                                     <li>
                                                         {resources
                                                             .filter((item) => item.category == header)
-                                                            .map((filteredItem) => (
+                                                            .map((filteredItem, key) => (
                                                                 <MenuItem
                                                                     className="team-menu-text"
-                                                                    key={filteredItem.id}
+                                                                    key={key}
                                                                     component="a"
                                                                     href={filteredItem.url}
                                                                     target="_blank"

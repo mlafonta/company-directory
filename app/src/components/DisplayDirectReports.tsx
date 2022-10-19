@@ -13,7 +13,6 @@ const DisplayDirectReports = ({ reports }: DisplayDirectReportsProps) => {
     const handleClick = () => {
         setOpen((prevOpen) => !prevOpen);
     };
-    console.log(reports[0]);
     return (
         <>
             <Box style={{ display: 'flex', alignItems: 'safe center' }}>

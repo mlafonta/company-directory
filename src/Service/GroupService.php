@@ -37,6 +37,7 @@ class GroupService
        foreach ($groupDTOs as $groupDTO) {
            $this->addDTOValues($groupDTO);
        }
+       usort($groupDTOs, array($this, 'comparator'));
        return $groupDTOs;
     }
 
@@ -119,5 +120,10 @@ class GroupService
         } else {
             $groupDTO->setType(self::TYPE_TEAM);
         }
+    }
+
+    private function comparator(GroupDTO $groupDTO1, GroupDTO $groupDTO2): int
+    {
+        return strcmp($groupDTO1->getName(), $groupDTO2->getName());
     }
 }

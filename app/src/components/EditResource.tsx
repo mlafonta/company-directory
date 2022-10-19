@@ -1,8 +1,7 @@
-import axios from '../apis/companyDirectoryServer';
-import useAxiosFunction from '../hooks/useAxiosFunction';
 import React, { useEffect, useState } from 'react';
 import { IResource } from '../models/IResource';
 import '../styles/Group.css';
+import { useGetResourcesQuery, useUpdateResourceMutation } from '../apis/apiSlice';
 import {
     Box,
     Button,
@@ -18,83 +17,54 @@ import {
 
 type EditResourceProps = {
     resource: IResource;
-    refresh: any;
+    setEdit: any;
 };
 
-const EditResource = ({ resource, refresh }: EditResourceProps) => {
-    const [response, error, loading, axiosFetch] = useAxiosFunction();
-    const [id, setId] = useState<number>(resource.id!);
-    const [name, setName] = useState<string>(resource.name!);
-    const [description, setDescription] = useState<string>(resource.description!);
-    const [url, setUrl] = useState<string>(resource.url!);
-    const [category, setCategory] = useState<string>(resource.category!);
-    const categories: string[] = [];
+const EditResource = ({ resource, setEdit }: EditResourceProps) => {
+    const { data, isLoading, error } = useGetResourcesQuery(undefined);
+    const [updateResource] = useUpdateResourceMutation();
+    const [editedResource, setEditedResource] = useState<IResource>(resource);
+    const [categories, setCategories] = React.useState<string[]>([]);
 
-    const getData = () => {
-        // @ts-ignore
-        axiosFetch({
-            axiosInstance: axios,
-            method: 'GET',
-            url: '/resources',
-        });
-    };
     useEffect(() => {
-        getData();
-    }, [refresh]);
-    if (!loading && !error && response) {
-        // @ts-ignore
-        response.forEach((item: IResource) => {
-            if (!categories.includes(item.category!)) {
-                categories.push(item.category!);
-            }
-        });
-    }
+        setCategories(
+            data?.map((resource) => resource.category!)
+                ? [...new Set(data?.map((resource) => resource.category!))]
+                : [],
+        );
+        setEditedResource(resource);
+    }, [data]);
 
     const handleCategoryChange = (event: SelectChangeEvent) => {
-        setCategory(event.target.value as string);
+        setEditedResource({ ...editedResource, category: event.target.value });
     };
 
     const handleNameChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setName(event.target.value);
+        setEditedResource({ ...editedResource, name: event.target.value });
     };
     const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setDescription(event.target.value);
+        setEditedResource({ ...editedResource, description: event.target.value });
     };
     const handleUrlChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setUrl(event.target.value);
+        setEditedResource({ ...editedResource, url: event.target.value });
     };
 
     const handleUrlBlur = () => {
-        if (!/^https*:\/\//.test(url) && url !== '') {
-            setUrl('http://' + url);
+        if (!/^https*:\/\//.test(editedResource.url!) && editedResource.url !== '') {
+            setEditedResource({ ...editedResource, url: 'http://' + editedResource.url });
         }
     };
-
     const cancel = () => {
-        refresh();
+        setEdit(false);
     };
-    const handleSubmit = (event: any) => {
-        event.preventDefault();
-        // @ts-ignore
-        axiosFetch({
-            axiosInstance: axios,
-            method: 'PUT',
-            url: '/resources/' + resource.id,
-            requestConfig: {
-                name,
-                category,
-                description,
-                url,
-                active: true,
-            },
-        }).then(() => {
-            refresh();
-        });
+    const handleSubmit = async () => {
+        await updateResource(editedResource);
+        setEdit(false);
     };
     return (
         <div>
-            {loading && <CircularProgress />}
-            {!loading && !error && (
+            {isLoading && <CircularProgress />}
+            {!isLoading && !error && (
                 <div>
                     <Typography variant="h5" className="form-header">
                         Edit Resource
@@ -105,8 +75,7 @@ const EditResource = ({ resource, refresh }: EditResourceProps) => {
                             <Select
                                 labelId="category-label"
                                 id="category"
-                                defaultValue={category}
-                                value={category}
+                                value={editedResource.category}
                                 label="Category"
                                 onChange={handleCategoryChange}
                             >
@@ -121,7 +90,7 @@ const EditResource = ({ resource, refresh }: EditResourceProps) => {
                             <TextField
                                 required
                                 variant="outlined"
-                                value={name}
+                                value={editedResource.name}
                                 label="Resource Name"
                                 onChange={handleNameChange}
                             />
@@ -130,7 +99,7 @@ const EditResource = ({ resource, refresh }: EditResourceProps) => {
                             <TextField
                                 required
                                 variant="outlined"
-                                value={description}
+                                value={editedResource.description}
                                 label="Resource Description"
                                 onChange={handleDescriptionChange}
                             />
@@ -139,23 +108,25 @@ const EditResource = ({ resource, refresh }: EditResourceProps) => {
                             <TextField
                                 required
                                 variant="outlined"
-                                value={url}
+                                value={editedResource.url}
                                 label="Resource Url"
                                 onChange={handleUrlChange}
                                 onBlur={handleUrlBlur}
                             />
                         </FormControl>
                         <Box display="flex" justifyContent="flex-end">
-                            {name !== '' && url !== '' && description !== '' && (
-                                <Button
-                                    onClick={handleSubmit}
-                                    variant="contained"
-                                    disableElevation
-                                    sx={{ color: '#FFFFFF', backgroundColor: '#3e71ab', mb: 2 }}
-                                >
-                                    Submit
-                                </Button>
-                            )}
+                            {editedResource.name !== '' &&
+                                editedResource.url !== '' &&
+                                editedResource.description !== '' && (
+                                    <Button
+                                        onClick={handleSubmit}
+                                        variant="contained"
+                                        disableElevation
+                                        sx={{ color: '#FFFFFF', backgroundColor: '#3e71ab', mb: 2 }}
+                                    >
+                                        Submit
+                                    </Button>
+                                )}
                             <Button
                                 variant="outlined"
                                 disableElevation

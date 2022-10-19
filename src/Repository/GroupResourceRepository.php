@@ -49,7 +49,7 @@ class GroupResourceRepository extends ServiceEntityRepository
 
     public function deleteResourceFromGroup(int $groupId, int $resourceId): void
     {
-        $groupResourceModel = $this->findOneBy(array('group' => $groupId, 'resource' => $resourceId));
+        $groupResourceModel = $this->findOneBy(array('group_data' => $groupId, 'resource' => $resourceId));
         $this->removeFromDatabase($groupResourceModel);
     }
 

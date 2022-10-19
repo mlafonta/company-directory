@@ -7,6 +7,7 @@ use App\Repository\GroupRepository;
 use App\Repository\ParentChildRepository;
 use App\Repository\PositionRepository;
 use App\Repository\UserRepository;
+use JetBrains\PhpStorm\Pure;
 
 class UserService
 {
@@ -26,19 +27,19 @@ class UserService
         $this->positionRepository = $positionRepository;
         $this->parentChildRepository = $parentChildRepository;
     }
+    public function getAllUsers(): array
+    {
+        $userDTOs = $this->userRepository->findAllUsers();
+        foreach ($userDTOs as $userDTO) {
+            $this->addDTOValues($userDTO);
+        }
+        usort($userDTOs, array($this, 'comparator'));
+        return $userDTOs;
+    }
     public function getUserById(int $userId): UserDTO
     {
-        $userDTO= $this->userRepository->findUserById($userId);
-        $userDTO->setTimeAtKipsu($this->convertDateToLength($userDTO->getTimeAtKipsu()));
-        $userDTO->setSlackLink('https://kipsu.slack.com/team/' . $userDTO->getSlackLink());
-        $groupId = $this->positionRepository->findGroupIdByPositionId($this->userRepository->findPositionIdByUserId($userDTO->getId()));
-        $userDTO->setGroup($this->groupRepository->findGroupById($groupId));
-        if($userDTO->getId() != 1) {
-            $this->addSupervisor($userDTO);
-        }
-        if ($userDTO->isLead()) {
-            $this->addReports($userDTO);
-        }
+        $userDTO = $this->userRepository->findUserById($userId);
+        $this->addDTOValues($userDTO);
         return $userDTO;
     }
 
@@ -138,5 +139,24 @@ class UserService
         }
 
         $userDTO->setReports($reportDTOs);
+    }
+
+    private function addDTOValues(UserDTO $userDTO): void
+    {
+        $userDTO->setTimeAtKipsu($this->convertDateToLength($userDTO->getTimeAtKipsu()));
+        $userDTO->setSlackLink('https://kipsu.slack.com/team/' . $userDTO->getSlackLink());
+        $groupId = $this->positionRepository->findGroupIdByPositionId($this->userRepository->findPositionIdByUserId($userDTO->getId()));
+        $userDTO->setGroup($this->groupRepository->findGroupById($groupId));
+        if ($userDTO->getId() != 1) {
+            $this->addSupervisor($userDTO);
+        }
+        if ($userDTO->isLead()) {
+            $this->addReports($userDTO);
+        }
+    }
+
+    private function comparator(UserDTO $userDTO1, UserDTO $userDTO2): int
+    {
+        return strcmp($userDTO1->getName(), $userDTO2->getName());
     }
 }

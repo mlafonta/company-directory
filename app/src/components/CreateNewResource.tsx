@@ -1,5 +1,3 @@
-import axios from '../apis/companyDirectoryServer';
-import useAxiosFunction from '../hooks/useAxiosFunction';
 import React, { useEffect, useState } from 'react';
 import { IResource } from '../models/IResource';
 import '../styles/Group.css';
@@ -15,122 +13,116 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
+import { useAddResourceToGroupMutation, useGetResourcesQuery } from '../apis/apiSlice';
 
 type CreateNewResourceProps = {
-    group: number;
+    groupId: number;
     groupResources: IResource[];
-    refresh: any;
+    setCreate: any;
 };
 
-const CreateNewResource = ({ group, groupResources, refresh }: CreateNewResourceProps) => {
-    const [response, error, loading, axiosFetch] = useAxiosFunction();
-    const [id, setId] = useState(0);
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [url, setUrl] = useState('');
-    const [category, setCategory] = useState('');
-    const [resource, setResource] = useState('');
+const CreateNewResource = ({ groupId, groupResources, setCreate }: CreateNewResourceProps) => {
+    const [addResource] = useAddResourceToGroupMutation();
+    const { data, isLoading, error } = useGetResourcesQuery(undefined);
+    const [newResource, setNewResource] = useState<IResource>({
+        id: 0,
+        name: '',
+        category: '',
+        description: '',
+        url: '',
+        active: true,
+    });
     const [resources, setResources] = useState<IResource[]>([]);
-    const [initialResources, setInitialResources] = useState<IResource[]>([]);
-    const categories: string[] = [];
-    if (!loading && !error && response) {
-        // @ts-ignore
-        response.forEach((item: IResource) => {
-            if (
-                item.active &&
-                !initialResources.includes(item) &&
-                !groupResources.some((resource) => resource.id === item.id)
-            ) {
-                initialResources.push(item);
-            }
-            if (!categories.includes(item.category!)) {
-                categories.push(item.category!);
-            }
-        });
-    }
+    const [other, setOther] = useState<boolean>(false);
+    const [open, setOpen] = useState<boolean>(false);
+    const [categories, setCategories] = React.useState<string[]>([]);
     const updateResources = () => {
-        setResources(initialResources.filter((resource) => resource.category === category));
+        setResources(
+            data?.filter(
+                (dataResource) =>
+                    dataResource.category === newResource.category &&
+                    dataResource.active &&
+                    !groupResources.some((resource) => resource.id === dataResource.id),
+            )!,
+        );
     };
-    const getData = () => {
-        setInitialResources([]);
-        // @ts-ignore
-        axiosFetch({
-            axiosInstance: axios,
-            method: 'GET',
-            url: '/resources',
-        });
-    };
+
     useEffect(() => {
-        getData();
-    }, [refresh]);
+        setCategories(
+            data?.map((resource) => resource.category!)
+                ? [...new Set(data?.map((resource) => resource.category!))]
+                : [],
+        );
+    }, [data]);
+
     useEffect(() => {
         updateResources();
-    }, [category]);
+    }, [newResource.category, data]);
 
     const handleCategoryChange = (event: SelectChangeEvent) => {
-        setCategory(event.target.value as string);
-        setResource('');
+        setNewResource({
+            id: 0,
+            name: '',
+            category: event.target.value as string,
+            description: '',
+            url: '',
+            active: true,
+        });
+        setOpen(false);
+        setOther(false);
     };
     const handleResourceChange = (event: SelectChangeEvent) => {
-        setResource(event.target.value as string);
-        if (event.target.value !== 'other') {
-            setName(event.target.value as string);
-            setDescription(
-                initialResources.filter((resource) => resource.name === (event.target.value as string))[0].description!,
-            );
-            setId(initialResources.filter((resource) => resource.name === (event.target.value as string))[0].id!);
-            setUrl(initialResources.filter((resource) => resource.name === (event.target.value as string))[0].url!);
+        if (event.target.value !== 'Other') {
+            setNewResource({
+                ...newResource,
+                id: data?.filter((dataResource) => dataResource.name === (event.target.value as string))[0].id!,
+                name: event.target.value as string,
+                description: data?.filter((dataResource) => dataResource.name === (event.target.value as string))[0]
+                    .description!,
+                url: data?.filter((dataResource) => dataResource.name === (event.target.value as string))[0].url!,
+            });
+            setOther(false);
         } else {
-            setName('');
-            setDescription('');
-            setUrl('');
-            setId(0);
+            setNewResource({
+                ...newResource,
+                id: 0,
+                name: '',
+                description: '',
+                url: '',
+            });
+            setOther(true);
         }
+        setOpen(true);
     };
 
     const handleNameChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setName(event.target.value);
+        setNewResource({ ...newResource, name: event.target.value });
     };
     const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setDescription(event.target.value);
+        setNewResource({ ...newResource, description: event.target.value });
     };
     const handleUrlChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setUrl(event.target.value);
+        setNewResource({ ...newResource, url: event.target.value });
     };
 
     const handleUrlBlur = () => {
-        if (!/^https*:\/\//.test(url) && url !== '') {
-            setUrl('http://' + url);
+        if (!/^https*:\/\//.test(newResource.url!) && newResource.url !== '') {
+            setNewResource({ ...newResource, url: 'http://' + newResource.url });
         }
     };
 
     const cancel = () => {
-        refresh();
+        setCreate(false);
     };
-    const handleSubmit = (event: any) => {
-        event.preventDefault();
-        // @ts-ignore
-        axiosFetch({
-            axiosInstance: axios,
-            method: 'POST',
-            url: '/groups/' + group + '/resources',
-            requestConfig: {
-                id,
-                name,
-                category,
-                description,
-                url,
-                active: true,
-            },
-        }).then(() => {
-            refresh();
-        });
+    const handleSubmit = async () => {
+        await addResource({ resource: newResource, groupId: groupId });
+        setCreate(false);
     };
 
     return (
         <div>
-            {loading && <CircularProgress />}
-            {!loading && !error && (
+            {isLoading && <CircularProgress />}
+            {!isLoading && !error && (
                 <div>
                     <Typography variant="h5" className="form-header">
                         Add New Resource
@@ -141,7 +133,7 @@ const CreateNewResource = ({ group, groupResources, refresh }: CreateNewResource
                             <Select
                                 labelId="category-label"
                                 id="category"
-                                value={category}
+                                value={newResource.category}
                                 label="Category"
                                 onChange={handleCategoryChange}
                             >
@@ -152,13 +144,13 @@ const CreateNewResource = ({ group, groupResources, refresh }: CreateNewResource
                                 ))}
                             </Select>
                         </FormControl>
-                        {category !== '' && (
+                        {newResource.category !== '' && (
                             <FormControl fullWidth sx={{ mb: 3 }}>
                                 <InputLabel id="resource-label">Resource</InputLabel>
                                 <Select
                                     labelId="resource-label"
                                     id="resource"
-                                    value={resource}
+                                    value={other ? 'Other' : newResource.name}
                                     label="Resource"
                                     onChange={handleResourceChange}
                                 >
@@ -167,21 +159,23 @@ const CreateNewResource = ({ group, groupResources, refresh }: CreateNewResource
                                             {resource.name}
                                         </MenuItem>
                                     ))}
-                                    <MenuItem value="other">Other</MenuItem>
+                                    <MenuItem value="Other">Other</MenuItem>
                                 </Select>
                             </FormControl>
                         )}
-                        {resource !== '' && (
+                        {open && (
                             <div>
                                 <FormControl fullWidth sx={{ mb: 3 }}>
                                     <TextField
                                         required
                                         variant="outlined"
-                                        value={name}
+                                        value={newResource.name}
                                         label="Resource Name"
                                         onChange={handleNameChange}
                                         InputProps={{
-                                            readOnly: name === resource && name !== 'other',
+                                            readOnly:
+                                                data?.filter((dataResource) => dataResource.name === newResource.name)
+                                                    ?.length! > 0,
                                         }}
                                     />
                                 </FormControl>
@@ -189,11 +183,13 @@ const CreateNewResource = ({ group, groupResources, refresh }: CreateNewResource
                                     <TextField
                                         required
                                         variant="outlined"
-                                        value={description}
+                                        value={newResource.description}
                                         label="Resource Description"
                                         onChange={handleDescriptionChange}
                                         InputProps={{
-                                            readOnly: name === resource && name !== 'other',
+                                            readOnly:
+                                                data?.filter((dataResource) => dataResource.name === newResource.name)
+                                                    ?.length! > 0,
                                         }}
                                     />
                                 </FormControl>
@@ -201,19 +197,21 @@ const CreateNewResource = ({ group, groupResources, refresh }: CreateNewResource
                                     <TextField
                                         required
                                         variant="outlined"
-                                        value={url}
+                                        value={newResource.url}
                                         label="Resource Url"
                                         onChange={handleUrlChange}
                                         onBlur={handleUrlBlur}
                                         InputProps={{
-                                            readOnly: name === resource && name !== 'other',
+                                            readOnly:
+                                                data?.filter((dataResource) => dataResource.name === newResource.name)
+                                                    ?.length! > 0,
                                         }}
                                     />
                                 </FormControl>
                             </div>
                         )}
                         <Box display="flex" justifyContent="flex-end">
-                            {name !== '' && url !== '' && description !== '' && (
+                            {newResource.name !== '' && newResource.url !== '' && newResource.description !== '' && (
                                 <Button
                                     onClick={handleSubmit}
                                     variant="contained"

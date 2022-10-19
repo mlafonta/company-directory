@@ -54,9 +54,10 @@ class ResourceController extends AbstractController
     }
 
     #[Route('/api/v1/groups/{groupId}/resources/{resourceId}', methods: ['DELETE'])]
-    public function removeResourceFromGroup(int $groupId, int $resourceId)
+    public function removeResourceFromGroup(int $groupId, int $resourceId): Response
     {
         $this->resourceService->deleteResourceFromGroup($groupId, $resourceId);
+        return new Response();
     }
 
     private function ConvertRequestToDTO(Request $request): ResourceDTO

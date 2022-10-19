@@ -15,6 +15,13 @@ class UserController extends AbstractController
         $this->userService = $userService;
     }
 
+    #[Route('/api/v1/users', methods: ['GET'])]
+    public function getAllUsers(): JsonResponse
+    {
+        $userDTOs = $this->userService->getAllUsers();
+        return $this->json($userDTOs);
+    }
+
     #[Route('/api/v1/users/{userId}', methods: ['GET'])]
     public function getUserById(int $userId): JsonResponse
     {

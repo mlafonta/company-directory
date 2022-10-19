@@ -22,6 +22,19 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
+    public function findAllUsers(): array
+    {
+        $userModels = $this->findAll();
+        $userDTOs = [];
+        foreach ($userModels as $userModel) {
+            if ($userModel->getActive()) {
+                $userDTO = $this->convertModelToDTO($userModel);
+                array_push($userDTOs, $userDTO);
+            }
+        }
+        return $userDTOs;
+    }
+
     public function findUserById(int $userId): UserDTO
     {
         $userModel = $this->find($userId);
@@ -45,6 +58,16 @@ class UserRepository extends ServiceEntityRepository
         }
     }
 
+    public function findPositionIdByUserId(int $userId)
+    {
+        return $this->createQueryBuilder('u')
+            ->select('(u.position)')
+            ->andWhere('u.id = :id')
+            ->setParameter('id', $userId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     private function convertModelToDTO(User $userModel) : UserDTO
     {
         $userDTO = new UserDTO();
@@ -59,16 +82,4 @@ class UserRepository extends ServiceEntityRepository
         $userDTO->setIsLead($userModel->getPosition()->isIsLead());
         return $userDTO;
     }
-
-    public function findPositionIdByUserId(int $userId)
-    {
-        return $this->createQueryBuilder('u')
-            ->select('(u.position)')
-            ->andWhere('u.id = :id')
-            ->setParameter('id', $userId)
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-
 }

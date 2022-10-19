@@ -1,24 +1,20 @@
 import * as React from 'react';
 import { useEffect } from 'react';
-import useAxiosFunction from '../hooks/useAxiosFunction';
-import { IResource } from '../models/IResource';
-import axios from '../apis/companyDirectoryServer';
 import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
 import CreateNewResource from './CreateNewResource';
-import CategoryDisplay from './CategoryDisplay';
+import DisplayCategory from './DisplayCategory';
+import { useGetResourcesByGroupQuery } from '../apis/apiSlice';
 
 type GroupResourceDisplayProps = {
-    group: number;
+    groupId: number;
 };
-const GroupResourceDisplay = ({ group }: GroupResourceDisplayProps) => {
-    const [response, error, loading, axiosFetch] = useAxiosFunction();
+const DisplayGroupResource = ({ groupId }: GroupResourceDisplayProps) => {
+    const { data, isLoading, error } = useGetResourcesByGroupQuery(groupId);
     const [open, setOpen] = React.useState<boolean>(false);
     const [create, setCreate] = React.useState<boolean>(false);
-    const [resources, setResources] = React.useState<IResource[]>([]);
     const [categories, setCategories] = React.useState<string[]>([]);
-    const [refresh, setRefresh] = React.useState<boolean>(false);
 
     const handleClick = () => {
         setOpen((prevOpen) => !prevOpen);
@@ -27,42 +23,18 @@ const GroupResourceDisplay = ({ group }: GroupResourceDisplayProps) => {
         setCreate(true);
     };
 
-    const getData = () => {
-        setResources([]);
-        setCategories([]);
-        // @ts-ignore
-        axiosFetch({
-            axiosInstance: axios,
-            method: 'GET',
-            url: '/groups/' + group + '/resources',
-        });
-    };
-
-    const executeRefresh = () => {
-        setRefresh((prevRefresh) => !prevRefresh);
-        setCreate(false);
-    };
-
     useEffect(() => {
-        getData();
-    }, [refresh]);
-
-    if (!loading && !error && response) {
-        // @ts-ignore
-        response.forEach((item: IResource) => {
-            if (item.active && !resources.some((resource) => resource.id === item.id)) {
-                resources.push(item);
-                if (!categories.includes(item.category!)) {
-                    categories.push(item.category!);
-                }
-            }
-        });
-    }
+        setCategories(
+            data?.map((resource) => resource.category!)
+                ? [...new Set(data?.map((resource) => resource.category!))]
+                : [],
+        );
+    }, [data]);
 
     return (
         <>
-            {loading && <CircularProgress />}
-            {!loading && !error && (
+            {isLoading && <CircularProgress />}
+            {!isLoading && !error && (
                 <Box>
                     <Grid container style={{ display: 'flex', alignItems: 'safe center' }}>
                         <Grid item xs={6}>
@@ -91,7 +63,7 @@ const GroupResourceDisplay = ({ group }: GroupResourceDisplayProps) => {
                         </Grid>
                     </Grid>
                     <Box>
-                        {open && categories.length === 0 && (
+                        {open && categories.length < 1 && (
                             <Typography variant="h4" className="resource-menu-header">
                                 No Resources Currently Added to this Group
                             </Typography>
@@ -99,16 +71,19 @@ const GroupResourceDisplay = ({ group }: GroupResourceDisplayProps) => {
                         {open &&
                             categories.map((category, key) => (
                                 <div key={key}>
-                                    <CategoryDisplay
+                                    <DisplayCategory
                                         category={category}
-                                        resources={resources}
-                                        refresh={executeRefresh}
-                                        group={group}
+                                        resources={data?.filter((resource) => resource.active)!}
+                                        groupId={groupId}
                                     />
                                 </div>
                             ))}
                         {create && (
-                            <CreateNewResource group={group} groupResources={resources} refresh={executeRefresh} />
+                            <CreateNewResource
+                                groupId={groupId}
+                                groupResources={data?.filter((resource) => resource.active)!}
+                                setCreate={setCreate}
+                            />
                         )}
                     </Box>
                 </Box>
@@ -117,4 +92,4 @@ const GroupResourceDisplay = ({ group }: GroupResourceDisplayProps) => {
     );
 };
 
-export default GroupResourceDisplay;
+export default DisplayGroupResource;
