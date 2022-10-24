@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Container, Grid, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import OrgChartUserCard from '../components/OrgChartUserCard';
 import { Tree } from 'react-organizational-chart';
 

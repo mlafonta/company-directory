@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { IResource } from '../models/IResource';
 import '../styles/Group.css';
-import { useGetResourcesQuery, useUpdateResourceMutation } from '../apis/apiSlice';
+import { useGetResourcesQuery, useUpdateResourceMutation } from '../redux/apiSlice';
 import {
     Box,
     Button,

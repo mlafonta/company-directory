@@ -6,8 +6,18 @@ import OrgChart from './pages/OrgChart';
 import AdminRequest from './pages/AdminRequest';
 import Group from './pages/Group';
 import User from './pages/User';
+import { useGetGroupsQuery } from './redux/apiSlice';
+import { useEffect } from 'react';
+import { addGroups } from './redux/groupsSlice';
+import { useAppDispatch } from './redux/hooks';
 
 function App() {
+    const { data: groupsData } = useGetGroupsQuery(undefined);
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+        dispatch(addGroups(groupsData ?? []));
+    }, [groupsData]);
+
     return (
         <>
             <BrowserRouter>

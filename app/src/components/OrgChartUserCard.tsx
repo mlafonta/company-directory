@@ -1,7 +1,7 @@
 import { IUser } from '../models/IUser';
 import * as React from 'react';
 import { Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Typography } from '@mui/material';
-import { useGetUserQuery } from '../apis/apiSlice';
+import { useGetUserQuery } from '../redux/apiSlice';
 import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import { TreeNode } from 'react-organizational-chart';

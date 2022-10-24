@@ -6,7 +6,7 @@ import DisplayTeamLead from '../components/DisplayTeamLead';
 import DisplayTeamMembers from '../components/DisplayTeamMembers';
 import DisplayChildTeams from '../components/DisplayChildTeams';
 import DisplayGroupResource from '../components/DisplayGroupResource';
-import { useGetGroupQuery } from '../apis/apiSlice';
+import { useGetGroupQuery } from '../redux/apiSlice';
 import Footer from '../components/Footer';
 import AppBar from '../components/AppBar';
 

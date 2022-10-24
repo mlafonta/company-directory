@@ -1,9 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import { api } from '../apis/apiSlice';
+import { api } from './apiSlice';
+import groupsReducer from './groupsSlice';
 
 export const store = configureStore({
     reducer: {
         [api.reducerPath]: api.reducer,
+        groups: groupsReducer,
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
 });

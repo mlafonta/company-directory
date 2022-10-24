@@ -5,7 +5,7 @@ import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
 import CreateNewResource from './CreateNewResource';
 import DisplayCategory from './DisplayCategory';
-import { useGetResourcesByGroupQuery } from '../apis/apiSlice';
+import { useGetResourcesByGroupQuery } from '../redux/apiSlice';
 
 type GroupResourceDisplayProps = {
     groupId: number;

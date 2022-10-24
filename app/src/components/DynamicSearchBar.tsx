@@ -1,5 +1,5 @@
 import { Autocomplete, TextField, Typography } from '@mui/material';
-import { useGetUsersQuery } from '../apis/apiSlice';
+import { useGetUsersQuery } from '../redux/apiSlice';
 import { useState } from 'react';
 import { IUser } from '../models/IUser';
 import { makeStyles } from '@mui/styles';

@@ -4,7 +4,7 @@ import { Container, Divider, Grid, LinearProgress, Paper, Typography } from '@mu
 import { IUser } from '../models/IUser';
 import DisplaySupervisor from '../components/DisplaySupervisor';
 import DisplayDirectReports from '../components/DisplayDirectReports';
-import { useGetUserQuery } from '../apis/apiSlice';
+import { useGetUserQuery } from '../redux/apiSlice';
 import AppBar from '../components/AppBar';
 import Footer from '../components/Footer';
 

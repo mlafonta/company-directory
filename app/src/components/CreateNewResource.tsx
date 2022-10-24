@@ -13,7 +13,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { useAddResourceToGroupMutation, useGetResourcesQuery } from '../apis/apiSlice';
+import { useAddResourceToGroupMutation, useGetResourcesQuery } from '../redux/apiSlice';
 
 type CreateNewResourceProps = {
     groupId: number;

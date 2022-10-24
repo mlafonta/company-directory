@@ -5,7 +5,7 @@ import '../styles/AppBar.css';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { IResource } from '../models/IResource';
-import { useGetResourcesByGroupQuery } from '../apis/apiSlice';
+import { useGetResourcesByGroupQuery } from '../redux/apiSlice';
 import { useEffect, useState } from 'react';
 
 type ResourcesMenuButtonProps = {

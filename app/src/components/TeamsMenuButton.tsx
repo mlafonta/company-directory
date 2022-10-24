@@ -6,9 +6,13 @@ import '../styles/AppBar.css';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import { IGroup } from '../models/IGroup';
-import { useGetGroupsQuery } from '../apis/apiSlice';
+import { useGetGroupsQuery } from '../redux/apiSlice';
+import { useAppSelector, useAppDispatch } from '../redux/hooks';
+import { addGroups } from '../redux/groupsSlice';
 
 const TeamsMenuButton = () => {
+    const { groups } = useAppSelector((state) => state.groups);
+    const dispatch = useAppDispatch();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [open, setOpen] = React.useState<boolean>(false);
     const { data, isLoading, error } = useGetGroupsQuery(undefined);
@@ -16,8 +20,11 @@ const TeamsMenuButton = () => {
     const [departments, setDepartments] = useState<IGroup[]>([]);
 
     useEffect(() => {
-        setTeams(data?.filter((group) => group.type === 'team') ?? []);
-        setDepartments(data?.filter((group) => group.type === 'department') ?? []);
+        setTeams(groups.filter((group) => group.type === 'team') ?? []);
+        setDepartments(groups.filter((group) => group.type === 'department') ?? []);
+    }, [groups]);
+    useEffect(() => {
+        dispatch(addGroups(data ?? []));
     }, [data]);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);

@@ -1,6 +1,6 @@
 import { Box, Button, Typography } from '@mui/material';
 import React from 'react';
-import { useDeleteResourceFromGroupMutation } from '../apis/apiSlice';
+import { useDeleteResourceFromGroupMutation } from '../redux/apiSlice';
 
 type DeleteResourceProps = {
     resourceId: number;
