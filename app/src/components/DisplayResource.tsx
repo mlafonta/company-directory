@@ -10,7 +10,6 @@ type DisplayResourceProps = {
 };
 
 const DisplayResource = ({ resource, groupId }: DisplayResourceProps) => {
-    const [currentResource, setCurrentResource] = React.useState<IResource>(resource);
     const [edit, setEdit] = React.useState<boolean>(false);
     const [remove, setRemove] = React.useState<boolean>(false);
 
@@ -25,11 +24,11 @@ const DisplayResource = ({ resource, groupId }: DisplayResourceProps) => {
     return (
         <>
             <Grid container spacing={1} justifyContent="left">
-                <Grid item xs={1}></Grid>
+                <Grid item xs={1} />
                 <Grid item xs={7}>
                     {!edit && !remove && (
-                        <Typography variant="h4" component="a" href={currentResource.url} target="_blank">
-                            {currentResource.name}
+                        <Typography variant="h4" component="a" href={resource.url} target="_blank">
+                            {resource.name}
                         </Typography>
                     )}
                 </Grid>
@@ -59,12 +58,12 @@ const DisplayResource = ({ resource, groupId }: DisplayResourceProps) => {
             <Box sx={{ ml: 10, mb: 2 }}>
                 {!edit && !remove && (
                     <Typography variant="h6" fontWeight="bold">
-                        {currentResource.description}
+                        {resource.description}
                     </Typography>
                 )}
-                {edit && !remove && <EditResource resource={currentResource} setEdit={setEdit} />}
+                {edit && !remove && <EditResource resource={resource} setEdit={setEdit} />}
                 {!edit && remove && (
-                    <DeleteResource resourceId={currentResource.id!} setRemove={setRemove} groupId={groupId} />
+                    <DeleteResource resourceId={resource.id!} setRemove={setRemove} groupId={groupId} />
                 )}
             </Box>
         </>

@@ -8,15 +8,6 @@ type DisplayTeamLeadProps = {
 };
 
 const DisplayTeamLead = ({ members }: DisplayTeamLeadProps) => {
-    const [member, setMember] = React.useState<IUser[]>(members);
-    const [lead, setLead] = React.useState<IUser[]>();
-    const [loading, setLoading] = React.useState<boolean>(true);
-    useEffect(() => {
-        if (member != undefined) {
-            setLead(member.filter((leader) => leader.lead));
-            setLoading(false);
-        }
-    }, [member]);
     return (
         <Container>
             <Grid container spacing={2} justifyContent="center" sx={{ marginTop: 8 }}>
@@ -27,8 +18,9 @@ const DisplayTeamLead = ({ members }: DisplayTeamLeadProps) => {
                 </Grid>
                 <Grid xs={8} item container justifyContent="center">
                     <Paper elevation={0} style={{ textAlign: 'center' }}>
-                        {!loading &&
-                            lead?.map((lead: IUser, key) => (
+                        {members
+                            .filter((leader) => leader.lead)
+                            .map((lead: IUser, key) => (
                                 <div key={key}>
                                     <Typography className="list" component="a" href={`/user/${lead.id}`} variant="h4">
                                         {lead.name}
@@ -38,7 +30,7 @@ const DisplayTeamLead = ({ members }: DisplayTeamLeadProps) => {
                             ))}
                     </Paper>
                 </Grid>
-                <Grid xs={2} item></Grid>
+                <Grid xs={2} item />
             </Grid>
         </Container>
     );

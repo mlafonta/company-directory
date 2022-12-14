@@ -35,18 +35,8 @@ const EditResource = ({ resource, setEdit }: EditResourceProps) => {
         setEditedResource(resource);
     }, [data]);
 
-    const handleCategoryChange = (event: SelectChangeEvent) => {
-        setEditedResource({ ...editedResource, category: event.target.value });
-    };
-
-    const handleNameChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setEditedResource({ ...editedResource, name: event.target.value });
-    };
-    const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setEditedResource({ ...editedResource, description: event.target.value });
-    };
-    const handleUrlChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setEditedResource({ ...editedResource, url: event.target.value });
+    const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement> | SelectChangeEvent) => {
+        setEditedResource({ ...editedResource, [event.target.name]: event.target.value });
     };
 
     const handleUrlBlur = () => {
@@ -77,7 +67,8 @@ const EditResource = ({ resource, setEdit }: EditResourceProps) => {
                                 id="category"
                                 value={editedResource.category}
                                 label="Category"
-                                onChange={handleCategoryChange}
+                                name="category"
+                                onChange={handleChange}
                             >
                                 {categories.map((name: string, key: number) => (
                                     <MenuItem key={key} value={name}>
@@ -92,7 +83,8 @@ const EditResource = ({ resource, setEdit }: EditResourceProps) => {
                                 variant="outlined"
                                 value={editedResource.name}
                                 label="Resource Name"
-                                onChange={handleNameChange}
+                                name="name"
+                                onChange={handleChange}
                             />
                         </FormControl>
                         <FormControl fullWidth sx={{ mb: 3 }}>
@@ -101,7 +93,8 @@ const EditResource = ({ resource, setEdit }: EditResourceProps) => {
                                 variant="outlined"
                                 value={editedResource.description}
                                 label="Resource Description"
-                                onChange={handleDescriptionChange}
+                                name="description"
+                                onChange={handleChange}
                             />
                         </FormControl>
                         <FormControl fullWidth sx={{ mb: 3 }}>
@@ -110,7 +103,8 @@ const EditResource = ({ resource, setEdit }: EditResourceProps) => {
                                 variant="outlined"
                                 value={editedResource.url}
                                 label="Resource Url"
-                                onChange={handleUrlChange}
+                                name="url"
+                                onChange={handleChange}
                                 onBlur={handleUrlBlur}
                             />
                         </FormControl>
